@@ -52,5 +52,16 @@ Node* remove_value(Node *root, int value){
 }
 
 Node* search_value(Node *root, int value){
-
+    while (root != 0){
+        if (root->value == value){
+            return root;
+        }
+        else if (value < root->value){
+            root = root->left;
+        }
+        else{
+            root = root->right;
+        }
+    }
+    return NULL;
 }
