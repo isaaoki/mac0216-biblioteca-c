@@ -26,9 +26,9 @@ int main(void) {
     imprimir_resultado_busca(catalogo, "9780000000099");
 
     printf("\n=== Remocoes ===\n");
-    catalogo = remove_Book(catalogo, "9780000000002"); /folha
-    catalogo = remove_Book(catalogo, "9780000000003"); //um filho
-    catalogo = remove_Book(catalogo, "9780000000005"); //raiz com dois filhos
+    catalogo = destroy_Book(catalogo, "9780000000002"); //folha
+    catalogo = destroy_Book(catalogo, "9780000000003"); //um filho
+    catalogo = destroy_Book(catalogo, "9780000000005"); //raiz com dois filhos
 
     imprimir_resultado_busca(catalogo, "9780000000002");
     imprimir_resultado_busca(catalogo, "9780000000003");
@@ -36,14 +36,14 @@ int main(void) {
     imprimir_resultado_busca(catalogo, "9780000000007");
 
     //Libera os nos restantes usando a propria funcao de remocao
-    catalogo = remove_Book(catalogo, "9780000000004");
-    catalogo = remove_Book(catalogo, "9780000000007");
+    catalogo = destroy_Book(catalogo, "9780000000004");
+    catalogo = destroy_Book(catalogo, "9780000000007");
 
     if (catalogo == NULL){
-        printf("\nTeste finalizado. Catalogo vazio.\n",);
+        printf("\nTeste finalizado. Catalogo vazio.\n");
     }
     else{
-        printf("\nTeste finalizado. Catalogo não vazio.\n",);
+        printf("\nTeste finalizado. Catalogo não vazio.\n");
     }
     return 0;
 }

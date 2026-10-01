@@ -21,6 +21,6 @@ Book *insert_Book(
     int ano
 );
 
-Book *remove_Book(Book *root, const char *ISBN);
+Book *destroy_Book(Book *root, const char *ISBN);
 
 Book *search_and_info_book(Book *root, const char *ISBN);

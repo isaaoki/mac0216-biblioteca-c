@@ -79,7 +79,7 @@ Book *insert_Book(
     }
 }
 
-Book *remove_Book(Book *ROOT, const char *ISBN) {
+Book *destroy_Book(Book *ROOT, const char *ISBN) {
     Book *root = ROOT;
     Book *father = NULL;
 
