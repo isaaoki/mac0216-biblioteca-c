@@ -1,22 +1,23 @@
-#include "bst.h"
+#include "../include/catalog.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-Node *insert_value(Node *root, int value){
+Book *insert_Book(Book *root, char *ISBN){
     if (root == 0){
-        root = malloc(sizeof(Node));
+        root = malloc(sizeof(Book));
         root->value = value;
         root->left = 0;
         root->right = 0;
         return root;
     }
 
-    Node* root_original = root;
+    Book* root_original = root;
 
     while(root != 0){
         if (value < root->value){
             if (root->left == 0){
-                root->left = malloc(sizeof(Node));
+                root->left = malloc(sizeof(Book));
                 if (root->left == 0){
                     printf("Falta de memória.\n");
                     return NULL;
@@ -31,7 +32,7 @@ Node *insert_value(Node *root, int value){
         }
         else if (value >= root->value){
             if (root->right == 0){
-                root->right = malloc(sizeof(Node));
+                root->right = malloc(sizeof(Book));
                 if (root->right == 0){
                     printf("Falta de memória.\n");
                     return NULL;
@@ -47,9 +48,9 @@ Node *insert_value(Node *root, int value){
     }
 }
 
-Node *remove_value(Node *root, int value){
-    Node* ROOT = root;
-    Node* father = 0;
+Book *destroy_book(Book *root, char *ISBN){
+    Book* ROOT = root;
+    Book* father = 0;
 
     while (root != 0){
         if (root-> value == value){
@@ -64,7 +65,7 @@ Node *remove_value(Node *root, int value){
                 }
                 else{
                     ROOT = root->left;
-                    Node *substitute = root->left;
+                    Book *substitute = root->left;
                     while (substitute->right != 0){
                         substitute = substitute->right;
                     }
@@ -87,7 +88,7 @@ Node *remove_value(Node *root, int value){
                 }
                 else{
                     father->right = root->left;
-                    Node* substitute = root->left;
+                    Book* substitute = root->left;
                     while (substitute->right != 0){
                         substitute = substitute->right;
                     }
@@ -110,7 +111,7 @@ Node *remove_value(Node *root, int value){
                 }
                 else{
                     father->left = root->right;
-                    Node* substitute = root->right;
+                    Book* substitute = root->right;
                     while (substitute->left != 0){
                         substitute = substitute->left;
                     }
@@ -133,12 +134,32 @@ Node *remove_value(Node *root, int value){
     return ROOT;
 }
 
-Node* search_value(Node *root, int value){
-    while (root != 0){
-        if (root->value == value){
+
+//Melhorado
+Book* search_and_info_book(Book *root, char *ISBN){
+    if (ISBN == NULL || ISBN[0] == "\0"){
+        return NULL;
+    }
+    while (root != NULL){
+        int pos = strcmp(root->isbn, ISBN);
+        if (pos == 0){
+            printf(
+                "ISBN: %s\n"
+                "Nome do livro: %s\n"
+                "Autor do livro: %s\n"
+                "Ano de publicação: %d\n"
+                "Disponíveis: %d\n"
+                "Totais: %d\n",
+                ISBN,
+                root->nome,
+                root->autor,
+                root->ano,
+                root->copias_disponiveis,
+                root->copias_totais
+            );
             return root;
         }
-        else if (value < root->value){
+        else if (pos < 0){
             root = root->left;
         }
         else{
