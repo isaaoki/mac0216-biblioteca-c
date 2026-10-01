@@ -173,7 +173,7 @@ Book *destroy_Book(Book *ROOT, const char *ISBN) {
 
 
 //Melhorado
-Book* search_and_info_book(Book *root, const char *ISBN){
+Book* search_and_info_Book(Book *root, const char *ISBN){
     if (ISBN == NULL || ISBN[0] == '\0'){
         return NULL;
     }

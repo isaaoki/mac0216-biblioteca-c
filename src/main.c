@@ -4,7 +4,7 @@
 
 static void imprimir_resultado_busca(Book *catalogo, const char *isbn) {
     printf("\nBuscando ISBN %s:\n", isbn);
-    if (search_and_info_book(catalogo, isbn) == NULL) {
+    if (search_and_info_Book(catalogo, isbn) == NULL) {
         printf("Livro nao encontrado.\n");
     }
 }
