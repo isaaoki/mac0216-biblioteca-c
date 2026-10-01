@@ -1,3 +1,5 @@
+#ifndef CATALOG_H
+#define CATALOG_H
 /**
     * @brief Dados de um livro, e sua posição na árvore binária de busca.
 */
@@ -78,3 +80,5 @@ Book *destroy_Book(Book *root, const char *ISBN);
     *          liberado diretamente pelo chamador.
  */
 Book *search_and_info_Book(Book *root, const char *ISBN);
+
+#endif
