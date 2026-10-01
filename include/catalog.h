@@ -13,8 +13,14 @@ typedef struct Book{
 } Book; 
 
 
-Book *insert_book(Book *root, char *ISBN);
+Book *insert_Book(
+    Book *root,
+    const char *isbn,
+    const char *nome,
+    const char *autor,
+    int ano
+);
 
-Book *destroy_book(Book *root, char *ISBN);
+Book *remove_Book(Book *root, const char *ISBN);
 
-Book *search_and_info_book(Book *root, char *ISBN);
+Book *search_and_info_book(Book *root, const char *ISBN);

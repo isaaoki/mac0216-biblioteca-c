@@ -1,13 +1,13 @@
-#include "../include/catalog.h"
+#include "catalog.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 Book *insert_Book(
     Book *root, 
-    char isbn[14],
-    char nome[50],
-    char autor[50],
+    const char *isbn,
+    const char *nome,
+    const char *autor,
     int ano
     ){
     if (root == NULL){
@@ -79,96 +79,102 @@ Book *insert_Book(
     }
 }
 
-Book *destroy_book(Book *root, char *ISBN){
-    Book* ROOT = root;
-    Book* father = 0;
+Book *remove_Book(Book *ROOT, const char *ISBN) {
+    Book *root = ROOT;
+    Book *father = NULL;
 
-    while (root != 0){
-        if (root-> value == value){
-            if (father == 0){
-                if (root->left == 0 && root->right == 0){
+    while (root != NULL) {
+        int pos = strcmp(ISBN, root->isbn);
+        // caso encontre
+        if (pos == 0) {
+            // caso o livro a ser deletado seja a raiz:
+            if (father == NULL) {
+                if (root->left == NULL && root->right == NULL) {
+                    ROOT = NULL;
                 }
-                else if (root->left != 0 && root->right == 0){
+                else if (root->left != NULL && root->right == NULL) {
                     ROOT = root->left;
                 }
-                else if (root->left == 0 && root->right != 0){
+                else if (root->left == NULL && root->right != NULL) {
                     ROOT = root->right;
                 }
-                else{
+                else {
                     ROOT = root->left;
                     Book *substitute = root->left;
-                    while (substitute->right != 0){
+                    while (substitute->right != NULL) {
                         substitute = substitute->right;
                     }
                     substitute->right = root->right;
                 }
+
                 free(root);
                 return ROOT;
             }
-            if (root->value >= father->value){
-                if (root->left == 0 && root->right == 0){
-                    father->right = 0;
-                    free(root);
-                    return ROOT;
+            if (root == father->right) {
+                if (root->left == NULL && root->right == NULL) {
+                    father->right = NULL;
                 }
-                else if (root->left == 0 && root->right != 0){
+                else if (root->left == NULL && root->right != NULL) {
                     father->right = root->right;
                 }
-                else if (root->left != 0 && root->right == 0){
+                else if (root->left != NULL && root->right == NULL) {
                     father->right = root->left;
                 }
-                else{
+                else {
                     father->right = root->left;
-                    Book* substitute = root->left;
-                    while (substitute->right != 0){
+
+                    Book *substitute = root->left;
+
+                    while (substitute->right != NULL) {
                         substitute = substitute->right;
                     }
+
                     substitute->right = root->right;
                 }
-                free(root);
-                return ROOT;
             }
-            else{
-                if (root->left == 0 && root->right == 0){
-                    father->left = 0;
-                    free(root);
-                    return ROOT;
+
+            else {
+                if (root->left == NULL && root->right == NULL) {
+                    father->left = NULL;
                 }
-                else if (root->left != 0 && root->right == 0){
+                else if (root->left != NULL && root->right == NULL) {
                     father->left = root->left;
                 }
-                else if (root->left == 0 && root->right != 0){
+                else if (root->left == NULL && root->right != NULL) {
                     father->left = root->right;
                 }
-                else{
+                else {
                     father->left = root->right;
-                    Book* substitute = root->right;
-                    while (substitute->left != 0){
+                    Book *substitute = root->right;
+                    while (substitute->left != NULL) {
                         substitute = substitute->left;
                     }
                     substitute->left = root->left;
                 }
-                free(root);
-                return ROOT;
-            
             }
+
+            free(root);
+            return ROOT;
         }
-        else if (value < root->value){
+        // movimentação pela árvore...
+        else if (pos < 0) {
             father = root;
             root = root->left;
         }
-        else{
+
+        else {
             father = root;
             root = root->right;
         }
     }
+
     return ROOT;
 }
 
 
 //Melhorado
-Book* search_and_info_book(Book *root, char ISBN[14]){
-    if (ISBN == NULL || ISBN[0] == "\0"){
+Book* search_and_info_book(Book *root, const char *ISBN){
+    if (ISBN == NULL || ISBN[0] == '\0'){
         return NULL;
     }
     while (root != NULL){
