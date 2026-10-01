@@ -4,7 +4,7 @@
 typedef struct Book{
     struct Book *left;
     struct Book *right;
-    char isbn[13];
+    char isbn[14];
     char nome[50];
     char autor[50];
     int ano;
