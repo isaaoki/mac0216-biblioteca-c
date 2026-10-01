@@ -18,6 +18,7 @@ typedef struct Book{
     * @param nome é o nome do livro a ser inserido.
     * @param autor é o autor do livro a ser inserido.
     * @param ano é o ano da publicação do livro a ser inserido.
+    * @param root é a raiz da árvore que vai ter o livro inserido.
     * @return Retorna a raiz da árvore em que ocorre a inserção.
     * @note Criação de um novo nó na árvore, caso o livro com o ISBN 
     * correspondente não exista na árvore.
