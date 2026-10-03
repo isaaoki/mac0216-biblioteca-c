@@ -27,7 +27,7 @@ user_set_status: para alterar o estado do usuario, USER_OK se nao tem pendente, 
 //Usuario
 struct User {
     unsigned int id;
-    char name[100];
+    char nome[100];
     UserStatus status;
 };
 //Conjunto dos usuarios
@@ -62,3 +62,49 @@ void user_conj_destroy(UserConj* c){
    free(c);
 }
 
+unsigned int user_register(UserConj* conj, const char* s){
+    if (!conj || !s) return 0;
+    //caso o vetor atingiu a capacidade
+    if (conj->tam >= conj->capacidade){
+        size_t c=conj->capacidade*2;
+        User** novo_users=(User**) realloc(conj->users, sizeof(User*)*c);
+        if (!novo_users) return 0; //caso falhe a alocacao
+        conj->users=novo_users;
+        conj->capacidade=c;
+    }
+    User* u = (User*) malloc(sizeof(User));
+    if (!u) return 0;
+    u->id=conj->next_id;
+    conj->next_id++;
+    strcpy(u->nome, s);
+    u->status = USER_OK;
+    conj->users[conj->tam] = u;
+    conj->tam++;
+    return u->id;
+}
+
+
+int user_delete(UserConj* conj, unsigned int id){
+   if (!conj) return 0;
+   for (size_t i=0;i<conj->tam;i++){
+        User* u=conj->users[i];
+        if (u->id == id && u->status != USER_BLOCKED){
+            free(conj->users[i]);
+            for (size_t j = i; j < conj->tam - 1; j++) {
+                conj->users[j] = conj->users[j + 1];
+            }
+            conj->tam--;
+            return 1;
+        }
+   }
+   return 0;
+}
+
+User* user_find(UserConj* conj, unsigned int id){
+    if (!conj) return NULL;
+    for (size_t i;i<conj->tam;i++){
+        User* u=conj->users[i];
+        if (u->id==id) return u;
+    }
+    return NULL;
+}

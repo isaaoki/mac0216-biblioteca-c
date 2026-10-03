@@ -14,10 +14,10 @@
     UserConj* user_conj_create(size_t capacidade);
     void user_conj_destroy(UserConj* conjunto);
 
-    int user_register(UserConj* conjunto, unsigned int user_id, const char* nome);
+    unsigned int user_register(UserConj* conjunto, const char* nome);
     int user_delete(UserConj* conjunto, unsigned int user_id);
     User* user_find(UserConj* conjunto, unsigned int user_id);
-    
+
     const char user_get_name(const User* user);
     unsigned int user_get_id(const User* user);
     UserStatus user_get_status(const User* user);
