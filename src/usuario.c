@@ -9,6 +9,7 @@ Conjunto de Usuarios: usuarios, tamanho do conjunto, capacidade max
 
 user_conj_create: criar o conjunto com capacidade inicial c ou 16 por padrao
 user_conj_destroy: excluir o conjunto e liberar a memoria
+user_conj_resize: aumenta a capacidade da tabela hash
 
 user_register:registrar um novo usuario(nome),cria um id e atualiza o status.
 user_delete: exclui um usuario apenas se ele nao esteja com status pendente
@@ -22,8 +23,11 @@ user_emprestimo: retorna se o cliente pode fazer um emprestimo (apenas se ele na
 user_set_status: para alterar o estado do usuario, USER_OK se nao tem pendente, USER_BLOCKED se estiver com um livro
 */
 
-
-
+//Tabela Hash
+typedef struct UserNode {
+    User* user;
+    struct UserNode* prox;
+} UserNode;
 //Usuario
 struct User {
     unsigned int id;
@@ -32,17 +36,21 @@ struct User {
 };
 //Conjunto dos usuarios
 struct UserConj{
-    User** users;
+    UserNode** users;
     size_t tam;
     size_t capacidade;
     unsigned int next_id;
 };
 
+static unsigned int hash_id(unsigned int id, size_t capacidade) {
+    return id % capacidade;
+}
+
 UserConj* user_conj_create(size_t c){
     if (c==0) c=16;
     UserConj* conjunto= (UserConj*) malloc(sizeof(UserConj));
     if (!conjunto) return NULL; //caso a alocacao de errado
-    conjunto->users= (User**) malloc(sizeof(User*)*c);
+    conjunto->users= (UserNode**) calloc(c,sizeof(UserNode*));
     if (!conjunto->users) {// caso alocacao de errado
         free(conjunto);
         return NULL;
@@ -54,24 +62,44 @@ UserConj* user_conj_create(size_t c){
 }
 void user_conj_destroy(UserConj* c){
     if (!c) return ;
-   for (size_t i=0; i<c->tam;i++){
-        if (c->users[i]){
-            free(c->users[i]);
+    if (c->users){
+        for (size_t i=0; i<c->capacidade;i++){
+            UserNode* atual=c->users[i];
+            while (atual){
+                UserNode* aux=atual;
+                atual=atual->prox;
+                if (aux->user) free(aux->user);
+                free(aux);
+            }
         }
-   }
-   free(c->users);
-   free(c);
+        free(c->users);
+    }
+    free(c);
 }
+void user_conj_resize(UserConj* conj){
+    size_t c=conj->capacidade*2;
+    UserNode** novo=(UserNode**) calloc(c, sizeof(UserNode*));
+    if (!novo) return;
+    for (size_t i=0;i<conj->capacidade;i++){
+        UserNode* atual=conj->users[i];
+        while (atual){
+            UserNode* prox=atual->prox;
+            unsigned int idx=hash_id(atual->user->id, c);
+            atual->prox=novo[idx];
+            novo[idx]=atual;
+            atual=prox;
+        }
+    }
+    free(conj->users);
+    conj->users=novo;
+    conj->capacidade=c;
 
+
+}
 unsigned int user_register(UserConj* conj, const char* s){
-    if (!conj || !s) return 0;
-    //caso o vetor atingiu a capacidade
-    if (conj->tam >= conj->capacidade){
-        size_t c=conj->capacidade*2;
-        User** novo_users=(User**) realloc(conj->users, sizeof(User*)*c);
-        if (!novo_users) return 0; //caso falhe a alocacao
-        conj->users=novo_users;
-        conj->capacidade=c;
+    if (!conj || !s) return 0;    
+    if (conj->tam >= conj->capacidade * 0.75) {
+        user_conj_resize(conj);
     }
     User* u = (User*) malloc(sizeof(User));
     if (!u) return 0;
@@ -79,33 +107,56 @@ unsigned int user_register(UserConj* conj, const char* s){
     conj->next_id++;
     strcpy(u->nome, s);
     u->status = USER_OK;
-    conj->users[conj->tam] = u;
+    unsigned int idx=hash_id(u->id, conj->capacidade);
+    UserNode* novo=(UserNode*) malloc(sizeof(UserNode));
+    if (!novo){
+        free(u);
+        return 0;
+    }
+    novo->user=u;
+    novo->prox=conj->users[idx];
+    conj->users[idx]=novo;
     conj->tam++;
     return u->id;
 }
 
 
 int user_delete(UserConj* conj, unsigned int id){
-   if (!conj) return 0;
-   for (size_t i=0;i<conj->tam;i++){
-        User* u=conj->users[i];
-        if (u->id == id && u->status != USER_BLOCKED){
-            free(conj->users[i]);
-            for (size_t j = i; j < conj->tam - 1; j++) {
-                conj->users[j] = conj->users[j + 1];
+   if (!conj || id==0) return 0;
+   unsigned int idx=hash_id(id, conj->capacidade);
+   UserNode* atual=conj->users[idx];
+   UserNode* prev=NULL;
+   while (atual){
+        User* u=atual->user;
+        if (u->id==id){
+            if (u->status == USER_BLOCKED) return 0; //nao deleta se estiver com emprestimo pendente
+            if (prev){
+                prev->prox=atual->prox;
+            } else{
+                conj->users[idx]=atual->prox;
             }
+            free(u);
+            free(atual);
             conj->tam--;
             return 1;
         }
+        prev=atual;
+        atual=atual->prox;
    }
+   
    return 0;
 }
 
 User* user_find(UserConj* conj, unsigned int id){
-    if (!conj) return NULL;
-    for (size_t i=0;i<conj->tam;i++){
-        User* u=conj->users[i];
-        if (u->id==id) return u;
+    if (!conj || id==0) return NULL;
+    unsigned int idx=hash_id(id, conj->capacidade);
+    UserNode* atual=conj->users[idx];
+    while(atual){
+        User* u=atual->user;
+        if (u->id == id){
+            return u;
+        }
+        atual=atual->prox;
     }
     return NULL;
 }

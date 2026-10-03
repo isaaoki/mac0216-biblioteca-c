@@ -1,5 +1,5 @@
-#ifndef USUARIO
-#define USUARIO
+#ifndef USUARIO_H
+#define USUARIO_H
     #include <stdlib.h>
     //Status do usuario
     typedef enum {
@@ -13,6 +13,7 @@
     //Conjunto dos Usuarios
     UserConj* user_conj_create(size_t capacidade);
     void user_conj_destroy(UserConj* conjunto);
+    void user_conj_resize(UserConj* conjunto);
 
     unsigned int user_register(UserConj* conjunto, const char* nome);
     int user_delete(UserConj* conjunto, unsigned int user_id);
