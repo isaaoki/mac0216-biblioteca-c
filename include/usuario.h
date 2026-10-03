@@ -18,7 +18,7 @@
     int user_delete(UserConj* conjunto, unsigned int user_id);
     User* user_find(UserConj* conjunto, unsigned int user_id);
 
-    const char user_get_name(const User* user);
+    const char* user_get_name(const User* user);
     unsigned int user_get_id(const User* user);
     UserStatus user_get_status(const User* user);
 

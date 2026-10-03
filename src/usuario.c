@@ -49,11 +49,12 @@ UserConj* user_conj_create(size_t c){
     }
     conjunto->tam=0;
     conjunto->capacidade=c;
+    conjunto -> next_id=1;
     return conjunto;
 }
 void user_conj_destroy(UserConj* c){
     if (!c) return ;
-   for (size_t i; i<c->tam;i++){
+   for (size_t i=0; i<c->tam;i++){
         if (c->users[i]){
             free(c->users[i]);
         }
@@ -102,9 +103,33 @@ int user_delete(UserConj* conj, unsigned int id){
 
 User* user_find(UserConj* conj, unsigned int id){
     if (!conj) return NULL;
-    for (size_t i;i<conj->tam;i++){
+    for (size_t i=0;i<conj->tam;i++){
         User* u=conj->users[i];
         if (u->id==id) return u;
     }
     return NULL;
+}
+
+const char* user_get_name(const User* u){
+    if (!u) return NULL;
+    return u->nome;
+}
+unsigned int user_get_id(const User* u){
+    if (!u) return 0;
+    return u->id;
+}
+UserStatus user_get_status(const User* u){
+    if (!u) return USER_BLOCKED;
+    return u->status;
+}
+
+int user_emprestimo(const User* u){
+    if (!u) return 0;
+    return (u->status==USER_OK);
+}
+
+int user_set_status(User* u, UserStatus status){
+    if (!u) return 0;
+    u->status=status;
+    return 1;
 }
