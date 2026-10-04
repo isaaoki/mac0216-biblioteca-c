@@ -1,0 +1,3 @@
+Isabela;0
+Joao;1
+Maria;0
