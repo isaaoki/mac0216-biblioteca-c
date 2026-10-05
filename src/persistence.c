@@ -19,8 +19,8 @@ UserConj* user_load() {
 
         // Adiciona status ao usuário
         User* usuario = user_find(usuarios, id);
-        if (status == 0) user_set_status(usuario, USER_BLOCKED);
-        else user_set_status(usuario, USER_OK);
+        if (status == 1) user_set_status(usuario, USER_OK);
+        else user_set_status(usuario, USER_BLOCKED);
     }
 
     fclose(f);
