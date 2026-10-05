@@ -15,7 +15,7 @@
     void user_conj_destroy(UserConj* conjunto);
     void user_conj_resize(UserConj* conjunto);
 
-    unsigned int user_register(UserConj* conjunto, const char* nome);
+    unsigned int user_register(UserConj* conjunto, const char* nome, UserStatus status);
     int user_delete(UserConj* conjunto, unsigned int user_id);
     User* user_find(UserConj* conjunto, unsigned int user_id);
 

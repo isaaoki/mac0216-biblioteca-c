@@ -96,7 +96,7 @@ void user_conj_resize(UserConj* conj){
 
 
 }
-unsigned int user_register(UserConj* conj, const char* s){
+unsigned int user_register(UserConj* conj, const char* s, UserStatus status){
     if (!conj || !s) return 0;    
     if (conj->tam >= conj->capacidade * 0.75) {
         user_conj_resize(conj);
@@ -106,7 +106,7 @@ unsigned int user_register(UserConj* conj, const char* s){
     u->id=conj->next_id;
     conj->next_id++;
     strcpy(u->nome, s);
-    u->status = USER_OK;
+    u->status = status;
     unsigned int idx=hash_id(u->id, conj->capacidade);
     UserNode* novo=(UserNode*) malloc(sizeof(UserNode));
     if (!novo){
