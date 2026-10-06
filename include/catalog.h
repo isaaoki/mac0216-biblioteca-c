@@ -62,6 +62,8 @@ Book *insert_Book(
     * @warning Caso delete o último nó da árvore, retornará NULL.
     * @warning O retorno deve ser atribuído à variável que contém o catálogo.
     * @warning Remove o registro inteiro do livro, independentemente da quantidade de cópias.
+    * @warning Devido ao armazenamento em int da quantidade de livros de mesmo ISBN, é possível ultrapassaro INT_MAX e causar comportamentos
+    * indefinidos.
 */
 Book *destroy_Book(Book *root, const char *ISBN);
 /**
