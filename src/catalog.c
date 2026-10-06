@@ -10,6 +10,16 @@ Book *insert_Book(
     const char *autor,
     int ano
     ){
+    if (isbn == NULL || nome == NULL || autor == NULL){
+        printf("Dados invalidos.\n");
+        return root;
+    }
+
+    if (strlen(isbn) > 13 || strlen(nome) > 49 || strlen(autor) > 49){
+        printf("Texto maior que o permitido.\n");
+        return root;
+    }
+
     if (root == NULL){
         root = malloc(sizeof(Book));
         if (root == NULL){

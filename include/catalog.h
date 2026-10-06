@@ -30,12 +30,11 @@ typedef struct Book{
     * nova raiz.
     * @pre root deve ser NULL ou apontar para uma árvore de busca binária
     * válida, ordenada por ISBN usando strcmp.
-    * @pre isbn, nome e autor devem ser strings válidas, não nulas e
-    * terminadas em '\0', com no máximo 13, 49 e 49 bytes, 
-    * respectivamente, sem contar o '\0'.
-    * @warning A função não valida os ponteiros nem o tamanho da string, logo
-    * os pré-requisitos devem ser cumpridos para que não gere acesso inválido ou
-    * buffer overflow.
+    * @pre Se não forem NULL, isbn, nome e autor devem apontar para strings
+    * válidas e terminadas em '\0'.
+    * @note Se isbn, nome ou autor for NULL, ou ultrapassar os limites de
+    * 13, 49 e 49 bytes, respectivamente (sem contar o '\0'), imprime uma
+    * mensagem e retorna a raiz sem alterar o catálogo.
     * @warning Em casos de falha de alocação, ele retorna a raiz, logo há caso em que
     * retorna NULL, quando há falha de alocação na criação de uma raiz.
 */
@@ -66,7 +65,7 @@ Book *insert_Book(
 Book *destroy_Book(Book *root, const char *ISBN);
 /**
     * @brief Busca um livro pelo ISBN e imprime suas informações.
-    * @param root é aaiz do catálogo.
+    * @param root é raiz do catálogo.
     * @param ISBN é o ISBN do livro procurado.
     * @return Retorna o ponteiro para o livro encontrado, ou NULL em casos que não for encontrado,
     *         , ISBN for NULL, se a string estiver vazia.
