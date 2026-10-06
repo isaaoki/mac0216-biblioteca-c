@@ -98,6 +98,11 @@ Book *destroy_Book(Book *ROOT, const char *ISBN) {
     Book *root = ROOT;
     Book *father = NULL;
 
+    if (ISBN == NULL){
+        printf("[ERRO]O ISBN é inválido.\n");
+        return ROOT;
+    }
+    
     while (root != NULL) {
         int pos = strcmp(ISBN, root->isbn);
         // caso encontre
