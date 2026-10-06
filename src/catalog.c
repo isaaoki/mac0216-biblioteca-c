@@ -11,19 +11,24 @@ Book *insert_Book(
     int ano
     ){
     if (isbn == NULL || nome == NULL || autor == NULL){
-        printf("Dados invalidos.\n");
+        printf("[ERRO]Dados invalidos.\n");
+        return root;
+    }
+
+    if (isbn[0] == '\0') {
+        printf("[ERRO]ISBN nao pode ser vazio.\n");
         return root;
     }
 
     if (strlen(isbn) > 13 || strlen(nome) > 49 || strlen(autor) > 49){
-        printf("Texto maior que o permitido.\n");
+        printf("[ERRO]Texto maior que o permitido.\n");
         return root;
     }
 
     if (root == NULL){
         root = malloc(sizeof(Book));
         if (root == NULL){
-            printf("Falta de memória.\n");
+            printf("[ERRO]Falta de memória.\n");
             return NULL;
         }
         strcpy(root->isbn, isbn);
@@ -50,7 +55,7 @@ Book *insert_Book(
             if (root->left == NULL){
                 root->left = malloc(sizeof(Book));
                 if (root->left == NULL){
-                    printf("Falta de memória.\n");
+                    printf("[ERRO]Falta de memória.\n");
                     return root_original;
                 }
                 root = root->left;
@@ -70,7 +75,7 @@ Book *insert_Book(
             if (root->right == NULL){
                 root->right = malloc(sizeof(Book));
                 if (root->right == NULL){
-                    printf("Falta de memória.\n");
+                    printf("[ERRO]Falta de memória.\n");
                     return root_original;
                 }
                 root = root->right;
