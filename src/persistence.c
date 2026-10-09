@@ -55,7 +55,7 @@ int user_save(UserConj* users) {
     return 0;
 }
 
-Book* catalog_load() {
+Livro* catalog_load() {
     FILE *f;
 
     f = fopen("books.txt", "r");
@@ -65,15 +65,15 @@ Book* catalog_load() {
     }
 
     // Cria raíz da árvore
-    Book *root = NULL;
-    Book book; 
+    Livro *root = NULL;
+    Livro book; 
     int disp, tot;
 
     while(fscanf(f, " %13[^;];%49[^;];%49[^;];%d;%d;%d", book.isbn, book.nome, book.autor, &book.ano, &disp, &tot) == 6) {
-        root = insert_Book(root, book.isbn, book.nome, book.autor, book.ano);
+        root = insere_livro(root, book.isbn, book.nome, book.autor, book.ano);
 
         // Após inserir, muda copias disponiveis e totais
-        Book* b = search_and_info_Book(root, book.isbn);
+        Livro* b = busca_livro(root, book.isbn);
         if (b) {
             b->copias_disponiveis = disp;
             b->copias_totais = tot;
@@ -84,7 +84,7 @@ Book* catalog_load() {
     return root;
 }
 
-int catalog_save(Book* catalog) {
+int catalog_save(Livro* catalog) {
     FILE *f;
 
     f = fopen("books.txt", "w");
@@ -100,7 +100,7 @@ int catalog_save(Book* catalog) {
     return 0;
 }
 
-void catalog_save_aux(Book *root, FILE *f) {
+void catalog_save_aux(Livro *root, FILE *f) {
     // Caso base: quando árvore está vazia
     if (root == NULL) return;
 

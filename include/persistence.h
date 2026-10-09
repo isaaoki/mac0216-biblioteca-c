@@ -2,7 +2,7 @@
 #define PERSISTENCE_H
 
 #include "usuario.h"
-#include "catalog.h"
+#include "catalogo.h"
 #include <stdio.h>
 
 /**
@@ -31,7 +31,7 @@ int user_save(UserConj* users);
  * @post Livros do arquivo são armazenados em memória em uma árvore.
  * @note Caso o arquivo books.txt não exista, a função exibe mensagem na tela e retorna NULL.
  */
-Book* catalog_load();
+Livro* catalog_load();
 
 /**
  * @brief Salva livros no arquivo books.txt.
@@ -41,7 +41,7 @@ Book* catalog_load();
  * @post Arquivo books.txt contém os livros da árvore, sendo que cada linha possui isbn;nome;autor;ano;copias_disponiveis;copias_totais.
  * @note Caso não seja possível abrir ou escrever no arquivo, a função exibe mensagem na tela e retorna -1.
  */
-int catalog_save(Book *catalog);
+int catalog_save(Livro *catalog);
 
 /**
  * @brief Percorre a árvore recursivamente e armazena os livros no arquivo.
@@ -51,6 +51,6 @@ int catalog_save(Book *catalog);
  * @pre f aponta para um arquivo aberto para escrita.
  * @post Os livros da subárvore de root são armazenados no arquivo apontado por f.
  */
-void catalog_save_aux(Book *root, FILE *f);
+void catalog_save_aux(Livro *root, FILE *f);
 
 #endif

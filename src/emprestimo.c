@@ -20,7 +20,7 @@ emprestimo *emprestimo_create(void){
 }
 
 
-int emprestar_livro(emprestimo *cab, UserConj *usuarios, Book *book, unsigned int id, const char *isbn){
+int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn){
     User *usuario = user_find(usuarios, id);
     if (usuario == NULL){
         printf("Empréstimo negado!\n Usuário não encontrado.\n");
@@ -84,7 +84,7 @@ int emprestar_livro(emprestimo *cab, UserConj *usuarios, Book *book, unsigned in
     }
 }
 
-int devolver_livro(emprestimo *cab, UserConj *usuarios, Book *book, unsigned int id){
+int devolver_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id){
     emprestimo *p, *q;
     p = cab;
     q = p->prox;

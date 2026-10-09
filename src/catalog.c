@@ -1,36 +1,38 @@
-#include "../include/catalog.h"
+#include "../include/catalogo.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-Book *insert_Book(
-    Book *root, 
-    const char *isbn,
-    const char *nome,
-    const char *autor,
-    int ano
-    ){
-    if (isbn == NULL || nome == NULL || autor == NULL){
-        printf("[ERRO]Dados invalidos.\n");
+Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char *autor, int ano) {
+    // Verifica condições do livro
+    if (isbn == NULL || nome == NULL || autor == NULL) {
+        printf("[ERRO] Dados invalidos.\n");
         return root;
     }
 
     if (isbn[0] == '\0') {
-        printf("[ERRO]ISBN nao pode ser vazio.\n");
+        printf("[ERRO] ISBN nao pode ser vazio.\n");
         return root;
     }
 
-    if (strlen(isbn) > 13 || strlen(nome) > 49 || strlen(autor) > 49){
-        printf("[ERRO]Texto maior que o permitido.\n");
+    if (strlen(isbn) > 13 || strlen(nome) > 49 || strlen(autor) > 49) {
+        printf("[ERRO] Texto maior que o permitido.\n");
         return root;
     }
 
-    if (root == NULL){
-        root = malloc(sizeof(Book));
-        if (root == NULL){
-            printf("[ERRO]Falta de memória.\n");
+    if (ano < 0) {
+        printf("[ERRO] Ano inválido (menor do que zero).\n");
+        return root;
+    }
+
+    // Caso em que não existe raíz
+    if (root == NULL) {
+        root = malloc(sizeof(Livro));
+        if (root == NULL) {
+            printf("[ERRO] Falta de memória.\n");
             return NULL;
         }
+        
         strcpy(root->isbn, isbn);
         strcpy(root->nome, nome);
         strcpy(root->autor, autor);
@@ -42,20 +44,23 @@ Book *insert_Book(
         return root;
     }
 
-    Book* root_original = root;
+    Livro* root_original = root;
     int pos;
-    while(1){
+
+    while (1) {
         pos = strcmp(isbn, root->isbn);
-        if (pos == 0){
+
+        // 1. Encontrou o mesmo livro, aumenta as cópias
+        if (pos == 0) {
             root->copias_totais++;
             root->copias_disponiveis++;
             return root_original;
-        }
-        else if (pos < 0){
-            if (root->left == NULL){
-                root->left = malloc(sizeof(Book));
+        } else if (pos < 0) { // 2: isbn está a esquerda do nó atual
+            // 2.1. Chegou nas folhas
+            if (root->left == NULL) {
+                root->left = malloc(sizeof(Livro));
                 if (root->left == NULL){
-                    printf("[ERRO]Falta de memória.\n");
+                    printf("[ERRO] Falta de memória.\n");
                     return root_original;
                 }
                 root = root->left;
@@ -69,13 +74,14 @@ Book *insert_Book(
                 root->copias_disponiveis = 1;
                 return root_original;
             }
-            root = root->left;
-        }
-        else if (pos > 0){
-            if (root->right == NULL){
-                root->right = malloc(sizeof(Book));
-                if (root->right == NULL){
-                    printf("[ERRO]Falta de memória.\n");
+            // 2.2. Vai para a esquerda da árvore
+            root = root->left; 
+        } else if (pos > 0) { // 3. isbn está a direita do nó atual
+            // 3.1. Chegou nas folhas
+            if (root->right == NULL) {
+                root->right = malloc(sizeof(Livro));
+                if (root->right == NULL) {
+                    printf("[ERRO] Falta de memória.\n");
                     return root_original;
                 }
                 root = root->right;
@@ -89,117 +95,105 @@ Book *insert_Book(
                 root->copias_disponiveis = 1;
                 return root_original;
             }
+            // 3.2. Vai para a direita da árvore
             root = root->right;
         }
     }
 }
 
-Book *destroy_Book(Book *ROOT, const char *ISBN) {
-    Book *root = ROOT;
-    Book *father = NULL;
+Livro *remove_livro(Livro *root, const char *isbn) {
+    Livro *atual = root; // Ponteiro que navega pela árvore
+    Livro *father = NULL; // Ponteiro para o pai do nó atual
 
-    if (ISBN == NULL){
-        printf("[ERRO]O ISBN é inválido.\n");
-        return ROOT;
+    // Validação do ISBN
+    if (isbn == NULL){
+        printf("[ERRO] ISBN é inválido.\n");
+        return root;
     }
     
-    while (root != NULL) {
-        int pos = strcmp(ISBN, root->isbn);
-        // caso encontre
+    while (atual != NULL) {
+        int pos = strcmp(isbn, atual->isbn);
+        // 1. Encontra o livro na árvore
         if (pos == 0) {
-            // caso o livro a ser deletado seja a raiz:
+            // Caso o livro a ser deletado seja a raiz
             if (father == NULL) {
-                if (root->left == NULL && root->right == NULL) {
-                    ROOT = NULL;
-                }
-                else if (root->left != NULL && root->right == NULL) {
-                    ROOT = root->left;
-                }
-                else if (root->left == NULL && root->right != NULL) {
-                    ROOT = root->right;
-                }
-                else {
-                    ROOT = root->left;
-                    Book *substitute = root->left;
+                // A raíz não tem filhos
+                if (atual->left == NULL && atual->right == NULL) {
+                    root = NULL;
+                } else if (atual->left != NULL && atual->right == NULL) { // A raíz tem apenas filho à esquerda
+                    root = atual->left;
+                } else if (atual->left == NULL && atual->right != NULL) { // A raíz tem apenas filho à esquerda
+                    root = atual->right;
+                } else { // A raíz tem dois filhos
+                    root = atual->left;
+                    Livro *substitute = atual->left;
                     while (substitute->right != NULL) {
                         substitute = substitute->right;
                     }
-                    substitute->right = root->right;
+                    substitute->right = atual->right;
                 }
 
-                free(root);
-                return ROOT;
+                free(atual);
+                return root;
             }
-            if (root == father->right) {
-                if (root->left == NULL && root->right == NULL) {
+
+            // Caso o livro a ser deletado é o filho à direita
+            if (atual == father->right) {
+                if (atual->left == NULL && atual->right == NULL) {
                     father->right = NULL;
-                }
-                else if (root->left == NULL && root->right != NULL) {
-                    father->right = root->right;
-                }
-                else if (root->left != NULL && root->right == NULL) {
-                    father->right = root->left;
-                }
-                else {
-                    father->right = root->left;
-
-                    Book *substitute = root->left;
-
+                } else if (atual->left == NULL && atual->right != NULL) {
+                    father->right = atual->right;
+                } else if (atual->left != NULL && atual->right == NULL) {
+                    father->right = atual->left;
+                } else {
+                    father->right = atual->left;
+                    Livro *substitute = atual->left;
                     while (substitute->right != NULL) {
                         substitute = substitute->right;
                     }
-
-                    substitute->right = root->right;
+                    substitute->right = atual->right;
                 }
-            }
-
-            else {
-                if (root->left == NULL && root->right == NULL) {
+            } else { // Caso o livro a ser deletado é o filho à esquerda
+                if (atual->left == NULL && atual->right == NULL) {
                     father->left = NULL;
-                }
-                else if (root->left != NULL && root->right == NULL) {
-                    father->left = root->left;
-                }
-                else if (root->left == NULL && root->right != NULL) {
-                    father->left = root->right;
-                }
-                else {
-                    father->left = root->right;
-                    Book *substitute = root->right;
+                } else if (atual->left != NULL && atual->right == NULL) {
+                    father->left = atual->left;
+                } else if (atual->left == NULL && atual->right != NULL) {
+                    father->left = atual->right;
+                } else {
+                    father->left = atual->right;
+                    Livro *substitute = atual->right;
                     while (substitute->left != NULL) {
                         substitute = substitute->left;
                     }
-                    substitute->left = root->left;
+                    substitute->left = atual->left;
                 }
             }
 
-            free(root);
-            return ROOT;
-        }
-        // movimentação pela árvore...
-        else if (pos < 0) {
-            father = root;
-            root = root->left;
-        }
-
-        else {
-            father = root;
-            root = root->right;
+            free(atual);
+            return root;
+        } else if (pos < 0) { // Vai para a esquerda se isbn é menor
+            father = atual;
+            atual = atual->left;
+        } else {
+            father = atual;
+            atual = atual->right;
         }
     }
 
-    return ROOT;
+    return root;
 }
 
-
-//Melhorado
-Book* search_and_info_Book(Book *root, const char *ISBN){
-    if (ISBN == NULL || ISBN[0] == '\0'){
+Livro *busca_livro(Livro *root, const char *isbn) {
+    // Valida casos em que isbn é nulo
+    if (isbn == NULL || isbn[0] == '\0'){
         return NULL;
     }
+
+    // Movimenta-se pela árvore, buscando isbn
     while (root != NULL){
-        int pos = strcmp(ISBN,root->isbn);
-        if (pos == 0){
+        int pos = strcmp(isbn,root->isbn);
+        if (pos == 0) { // Encontrou o livro
             printf(
                 "ISBN: %s\n"
                 "Nome do livro: %s\n"
@@ -207,7 +201,7 @@ Book* search_and_info_Book(Book *root, const char *ISBN){
                 "Ano de publicação: %d\n"
                 "Disponíveis: %d\n"
                 "Totais: %d\n",
-                ISBN,
+                isbn,
                 root->nome,
                 root->autor,
                 root->ano,
@@ -215,13 +209,12 @@ Book* search_and_info_Book(Book *root, const char *ISBN){
                 root->copias_totais
             );
             return root;
-        }
-        else if (pos < 0){
+        } else if (pos < 0) { // Caso em que isbn é menor
             root = root->left;
-        }
-        else{
+        } else {
             root = root->right;
         }
     }
+    printf("[ERRO] Livro com ISBN %s não encontrado no catálogo.\n", isbn);
     return NULL;
 }

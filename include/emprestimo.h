@@ -2,7 +2,7 @@
 #define EMPRESTIMO_H
 
 #include "usuario.h"
-#include "catalog.h"
+#include "catalogo.h"
 
 
 typedef struct Emprestimo {
@@ -16,9 +16,9 @@ typedef struct Emprestimo {
 
 emprestimo *emprestimo_create(void);
 
-int emprestar_livro(emprestimo *cab, UserConj *usuarios, Book *book, unsigned int id, const char *isbn);
+int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn);
 
-int devolver_livro(emprestimo *cab, UserConj *usuarios, Book *book, unsigned int id);
+int devolver_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id);
 
 int aumentar_prazo(emprestimo *cab, unsigned int id,int dias);
 

@@ -20,7 +20,7 @@ int main() {
     }
 
     printf("Testando persistência dos livros...\n");
-    Book* catalog = catalog_load();
+    Livro* catalog = catalog_load();
     if (catalog != NULL) {
         printf("Livros carregados com sucesso\n");
         catalog_save(catalog);
