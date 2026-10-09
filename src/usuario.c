@@ -23,25 +23,6 @@ user_emprestimo: retorna se o cliente pode fazer um emprestimo (apenas se ele na
 user_set_status: para alterar o estado do usuario, USER_OK se nao tem pendente, USER_BLOCKED se estiver com um livro
 */
 
-//Tabela Hash
-typedef struct UserNode {
-    User* user;
-    struct UserNode* prox;
-} UserNode;
-//Usuario
-struct User {
-    unsigned int id;
-    char nome[100];
-    UserStatus status;
-};
-//Conjunto dos usuarios
-struct UserConj{
-    UserNode** users;
-    size_t tam;
-    size_t capacidade;
-    unsigned int next_id;
-};
-
 static unsigned int hash_id(unsigned int id, size_t capacidade) {
     return id % capacidade;
 }

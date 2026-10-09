@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "catalog.h"
+#include "../include/catalog.h"
 
 static void imprimir_resultado_busca(Book *catalogo, const char *isbn) {
     printf("\nBuscando ISBN %s:\n", isbn);

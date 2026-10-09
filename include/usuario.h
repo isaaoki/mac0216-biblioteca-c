@@ -10,6 +10,25 @@
     typedef struct User User;
     typedef struct UserConj UserConj;
 
+    //Tabela Hash
+    typedef struct UserNode {
+        User* user;
+        struct UserNode* prox;
+    } UserNode;
+    //Usuario
+    struct User {
+        unsigned int id;
+        char nome[100];
+        UserStatus status;
+    };
+    //Conjunto dos usuarios
+    struct UserConj{
+        UserNode** users;
+        size_t tam;
+        size_t capacidade;
+        unsigned int next_id;
+    };
+
     //Conjunto dos Usuarios
     UserConj* user_conj_create(size_t capacidade);
     void user_conj_destroy(UserConj* conjunto);

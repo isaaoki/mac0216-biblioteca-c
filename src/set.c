@@ -98,11 +98,11 @@ int set_insert(Set* set, int x){
     return 1; //retorna 1 se tudo der certo
 } 
 int set_remove(Set* set, int x){
-
+    return 0;
 }
 size_t set_size(Set* set){
-
+    return 0;
 }
 int set_empty(Set* set){
-
+    return 0;
 }

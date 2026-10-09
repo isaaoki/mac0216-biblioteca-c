@@ -15,12 +15,12 @@ UserConj* user_load() {
     int status;
 
     while(fscanf(f, " %99[^;];%d", nome, &status) == 2) {
-        unsigned int id = user_register(usuarios, nome);
+        UserStatus s;
 
-        // Adiciona status ao usuário
-        User* usuario = user_find(usuarios, id);
-        if (status == 1) user_set_status(usuario, USER_OK);
-        else user_set_status(usuario, USER_BLOCKED);
+        if (status == 1) s = USER_OK;
+        else s = USER_BLOCKED;
+        
+        user_register(usuarios, nome, s);
     }
 
     fclose(f);

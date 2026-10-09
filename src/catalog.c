@@ -1,4 +1,4 @@
-#include "catalog.h"
+#include "../include/catalog.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
