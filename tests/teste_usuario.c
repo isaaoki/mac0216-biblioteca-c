@@ -15,17 +15,61 @@ int main() {
     // 2. Testando cadastro de usuarios  e redimensionamento automático
     printf("2. Cadastrando usuarios: Ana, Bruno, Carlos\n");
     unsigned int id1 = cria_usuario(conj, "Ana ", USER_OK);
+    if (id1 == 0) {
+        printf("Erro: Falha ao criar o usuario Ana !\n");
+    } else {
+        printf(" - Sucesso: Ana criada com - ID: %u | Nome: Ana \n", id1);
+    }
     unsigned int id2 = cria_usuario(conj, "Bruno ", USER_OK);
+    if (id2 == 0) {
+        printf("Erro: Falha ao criar o usuario Bruno !\n");
+    } else {
+        printf(" - Sucesso: Ana criada com - ID: %u | Nome: Bruno \n", id1);
+    }
     unsigned int id3 = cria_usuario(conj, "Carlos", USER_BLOCKED); // Cadastrado já bloqueado (com empréstimo)
-
-    printf("Usuarios cadastrados:\n");
-    printf(" - ID: %u | Nome: Ana \n", id1);
-    printf(" - ID: %u | Nome: Bruno \n", id2);
-    printf(" - ID: %u | Nome: Carlos (Bloqueado)\n", id3);
+    if (id3 == 0) {
+            printf("Erro: Falha ao criar o usuario Carlos !\n");
+        } else {
+            printf(" - Sucesso: Carlos criada com - ID: %u | Nome: Carlos \n", id1);
+        }
+    printf("Tentando criar usuario usando parametros NULL.\n");
+    unsigned int id_invalido1 = cria_usuario(NULL, "Teste Null", USER_OK);
+    unsigned int id_invalido2 = cria_usuario(conj, NULL, USER_OK);
+    if (id_invalido1 == 0 && id_invalido2 == 0) {
+        printf(" - Sucesso: A funcao tratou as insercoes com ponteiros e string NULL.\n");
+    }
+    else {
+        printf("Erro: A função falhou em verificar parametros NULL.\n");
+    }
     printf("Capacidade atual apos insercoes: %zu, Tamanho: %zu\n\n", conj->capacidade, conj->tam);
 
-    // 3. Testando busca de usuarios (busca_usuario)
-    printf("3. Testando busca de usuarios por ID\n");
+    // 3. Testando funcoes de consulta (obter_nome_usuario, obter_id_usuario, obter_status_usuario)
+    printf("3. Testando funcoes de consulta \n");
+    printf("Buscando Carlos.\n");
+    User* u_carlos = busca_usuario(conj, id3);
+    if (u_carlos) {
+        printf("Consulta direta -> Nome: %s, ID: %u, Status: %d\n\n", 
+               obter_nome_usuario(u_carlos), 
+               obter_id_usuario(u_carlos), 
+               obter_status_usuario(u_carlos));
+    }
+    printf("Buscando Bruno.\n");
+    User* u_bruno = busca_usuario(conj, id2);
+    if (u_bruno) {
+        printf("Consulta direta -> Nome: %s, ID: %u, Status: %d\n\n", 
+               obter_nome_usuario(u_bruno), 
+               obter_id_usuario(u_bruno), 
+               obter_status_usuario(u_bruno));
+    }
+    printf("Tentando usar as funcoes usando parametros NULL.\n");
+    if (obter_nome_usuario(NULL) == NULL && obter_id_usuario(NULL) == 0 && obter_status_usuario(NULL) == USER_BLOCKED) {
+        printf(" - Sucesso: A funçao tratou a chamada com parametros NULL.\n\n");
+    }else{
+        printf("Erro: A função falhou em verificar parametros NULL.\n");
+    }
+
+    // 4. Testando busca de usuarios (busca_usuario)
+    printf("4. Testando busca de usuarios por ID\n");
     User* u_encontrado = busca_usuario(conj, id2);
     if (u_encontrado) {
         printf("Usuario encontrado! ID: %u, Nome: %s\n", obter_id_usuario(u_encontrado), obter_nome_usuario(u_encontrado));
@@ -38,22 +82,6 @@ int main() {
         printf("Busca por ID inexistente (999) retornou NULL corretamente.\n\n");
     }
 
-    // 4. Testando funcoes de consulta (obter_nome_usuario, obter_id_usuario, obter_status_usuario)
-    printf("4. Testando funcoes de consulta \n");
-    User* u_carlos = busca_usuario(conj, id3);
-    if (u_carlos) {
-        printf("Consulta direta -> Nome: %s, ID: %u, Status: %d\n\n", 
-               obter_nome_usuario(u_carlos), 
-               obter_id_usuario(u_carlos), 
-               obter_status_usuario(u_carlos));
-    }
-    User* u_bruno = busca_usuario(conj, id2);
-    if (u_bruno) {
-        printf("Consulta direta -> Nome: %s, ID: %u, Status: %d\n\n", 
-               obter_nome_usuario(u_bruno), 
-               obter_id_usuario(u_bruno), 
-               obter_status_usuario(u_bruno));
-    }
 
     // 5. Testando verificação e alteração de status (verifica_emprestimo e atualiza_status_usuario)
     printf("5. Testando regras de emprestimo e status\n");
