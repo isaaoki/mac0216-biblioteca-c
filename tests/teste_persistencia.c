@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "../include/persistence.h"
+#include "../include/persistencia.h"
 
 int main() {
     printf("Testando persistência dos usuários...\n");
-    UserConj* users = user_load();
+    UserConj* users = carrega_usuarios();
 
     if (users != NULL) {
         printf("Usuários carregados com sucesso\n");
@@ -15,15 +15,15 @@ int main() {
                 u = u->prox;
             }
         }
-        user_save(users);
+        salva_usuarios(users);
         remove_conj_usuarios(users);
     }
 
     printf("Testando persistência dos livros...\n");
-    Livro* catalog = catalog_load();
+    Livro* catalog = carrega_catalogo();
     if (catalog != NULL) {
         printf("Livros carregados com sucesso\n");
-        catalog_save(catalog);
+        salva_catalogo(catalog);
         printf("Salvando livros no arquivo\n");
     }
 

@@ -1,5 +1,5 @@
-#ifndef PERSISTENCE_H
-#define PERSISTENCE_H
+#ifndef PERSISTENCIA_H
+#define PERSISTENCIA_H
 
 #include "usuario.h"
 #include "catalogo.h"
@@ -12,7 +12,7 @@
  * @post Conjunto de usuários armazena em memória os usuários do arquivo.
  * @note Caso o arquivo users.txt não exista, a função exibe mensagem na tela e retorna NULL.
  */
-UserConj* user_load();
+UserConj* carrega_usuarios();
 
 /**
  * @brief Salva conjunto de usuários no arquivo users.txt.
@@ -22,7 +22,7 @@ UserConj* user_load();
  * @post Arquivo users.txt contém os usuários do conjunto, sendo que cada linha possui nome;status.
  * @note Caso não seja possível abrir ou escrever no arquivo, a função exibe mensagem na tela e retorna -1.
  */
-int user_save(UserConj* users);
+int salva_usuarios(UserConj* usuarios);
 
 /**
  * @brief Lê livros de arquivo books.txt e monta árvore com livros.
@@ -31,7 +31,7 @@ int user_save(UserConj* users);
  * @post Livros do arquivo são armazenados em memória em uma árvore.
  * @note Caso o arquivo books.txt não exista, a função exibe mensagem na tela e retorna NULL.
  */
-Livro* catalog_load();
+Livro* carrega_catalogo();
 
 /**
  * @brief Salva livros no arquivo books.txt.
@@ -41,16 +41,6 @@ Livro* catalog_load();
  * @post Arquivo books.txt contém os livros da árvore, sendo que cada linha possui isbn;nome;autor;ano;copias_disponiveis;copias_totais.
  * @note Caso não seja possível abrir ou escrever no arquivo, a função exibe mensagem na tela e retorna -1.
  */
-int catalog_save(Livro *catalog);
-
-/**
- * @brief Percorre a árvore recursivamente e armazena os livros no arquivo.
- * @param root Nó atual da árvore.
- * @param f Arquivo onde os livros serão armazenados.
- * @returns void.
- * @pre f aponta para um arquivo aberto para escrita.
- * @post Os livros da subárvore de root são armazenados no arquivo apontado por f.
- */
-void catalog_save_aux(Livro *root, FILE *f);
+int salva_catalogo(Livro *catalogo);
 
 #endif

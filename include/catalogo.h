@@ -1,5 +1,5 @@
-#ifndef CATALOG_H
-#define CATALOG_H
+#ifndef CATALOGO_H
+#define CATALOGO_H
 
 /**
  * @brief Representa um livro com isbn, nome, autor, número de cópias e sua posição na árvore binária de busca.

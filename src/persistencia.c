@@ -1,6 +1,6 @@
-#include "../include/persistence.h"
+#include "../include/persistencia.h"
 
-UserConj* user_load() {
+UserConj* carrega_usuarios() {
     FILE *f;
 
     f = fopen("users.txt", "r");
@@ -27,7 +27,7 @@ UserConj* user_load() {
     return usuarios;
 }
 
-int user_save(UserConj* users) {
+int salva_usuarios(UserConj* usuarios) {
     FILE *f;
 
     f = fopen("users.txt", "w");
@@ -37,8 +37,8 @@ int user_save(UserConj* users) {
     }
 
     // Percorrendo conjunto de usuários
-    for (int i = 0; i < users->capacidade; i++) {
-        UserNode *u = users->users[i];
+    for (int i = 0; i < usuarios->capacidade; i++) {
+        UserNode *u = usuarios->users[i];
 
         while (u != NULL) {
             User* atual = u->user;
@@ -55,7 +55,7 @@ int user_save(UserConj* users) {
     return 0;
 }
 
-Livro* catalog_load() {
+Livro* carrega_catalogo() {
     FILE *f;
 
     f = fopen("books.txt", "r");
@@ -84,7 +84,22 @@ Livro* catalog_load() {
     return root;
 }
 
-int catalog_save(Livro* catalog) {
+void salva_catalogo_aux(Livro *root, FILE *f) {
+    // Caso base: quando árvore está vazia
+    if (root == NULL) return;
+
+    salva_catalogo_aux(root->left, f); // Percorre nós à esquerda
+    fprintf(f, "%s;%s;%s;%d;%d;%d\n",
+            root->isbn,
+            root->nome,
+            root->autor,
+            root->ano,
+            root->copias_disponiveis,
+            root->copias_totais);
+    salva_catalogo_aux(root->right, f); // Percorre nós à direita
+}
+
+int salva_catalogo(Livro* catalogo) {
     FILE *f;
 
     f = fopen("books.txt", "w");
@@ -94,23 +109,8 @@ int catalog_save(Livro* catalog) {
     }
 
     // Chama função recursiva que percorre a árvore
-    catalog_save_aux(catalog, f);
+    salva_catalogo_aux(catalogo, f);
 
     fclose(f);
     return 0;
-}
-
-void catalog_save_aux(Livro *root, FILE *f) {
-    // Caso base: quando árvore está vazia
-    if (root == NULL) return;
-
-    catalog_save_aux(root->left, f); // Percorre nós à esquerda
-    fprintf(f, "%s;%s;%s;%d;%d;%d\n",
-            root->isbn,
-            root->nome,
-            root->autor,
-            root->ano,
-            root->copias_disponiveis,
-            root->copias_totais);
-    catalog_save_aux(root->right, f); // Percorre nós à direita
 }

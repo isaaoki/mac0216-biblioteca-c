@@ -4,7 +4,6 @@
 #include "usuario.h"
 #include "catalogo.h"
 
-
 typedef struct Emprestimo {
     unsigned int user_id;
     char isbn[14];
@@ -12,18 +11,18 @@ typedef struct Emprestimo {
     time_t data_emprestimo;
     time_t data_devolucao;
     struct Emprestimo *prox;
-} emprestimo;
+} Emprestimo;
 
-emprestimo *emprestimo_create(void);
+Emprestimo *criar_emprestimo(void);
 
-int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn);
+int emprestar_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn);
 
-int devolver_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id);
+int devolver_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id);
 
-int aumentar_prazo(emprestimo *cab, unsigned int id,int dias);
+int aumentar_prazo(Emprestimo *cab, unsigned int id,int dias);
 
-int aplicar_penalidade(emprestimo *usuario, int dias_atraso);
+int aplicar_penalidade(Emprestimo *usuario, int dias_atraso);
 
-void emprestimo_destroy(emprestimo *cab);
+void remover_emprestimo(Emprestimo *cab);
 
 #endif

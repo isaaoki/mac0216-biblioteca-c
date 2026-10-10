@@ -4,11 +4,10 @@
 #include <string.h>
 #include "../include/emprestimo.h"
 
-
 struct tm *data; 
 
-emprestimo *emprestimo_create(void){
-    emprestimo *cab = malloc(sizeof(emprestimo));
+Emprestimo *criar_emprestimo(void){
+    Emprestimo *cab = malloc(sizeof(Emprestimo));
     if (cab == NULL){
         printf("ERRO! Não foi possível alocar memória.");
         return NULL;
@@ -20,7 +19,7 @@ emprestimo *emprestimo_create(void){
 }
 
 
-int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn){
+int emprestar_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn){
     User *usuario = busca_usuario(usuarios, id);
     if (usuario == NULL){
         printf("Empréstimo negado!\n Usuário não encontrado.\n");
@@ -29,7 +28,7 @@ int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned i
     else{
         if(verifica_emprestimo(usuario)== 1){
             if(book->copias_disponiveis > 0){
-                emprestimo *empret = malloc(sizeof(emprestimo));
+                Emprestimo *empret = malloc(sizeof(Emprestimo));
                 if (empret == NULL){
                     printf("ERRO! Não foi possível alocar memória para novo empréstimo.");
                     return 0;
@@ -84,8 +83,8 @@ int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned i
     }
 }
 
-int devolver_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id){
-    emprestimo *p, *q;
+int devolver_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id){
+    Emprestimo *p, *q;
     p = cab;
     q = p->prox;
     while (q!= NULL && q->user_id != id){
@@ -126,8 +125,8 @@ int devolver_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned in
     }
 }
 
-int aumentar_prazo(emprestimo *cab, unsigned int id,int dias){
-    emprestimo *p, *q;
+int aumentar_prazo(Emprestimo *cab, unsigned int id,int dias){
+    Emprestimo *p, *q;
     p = cab;
     q = p->prox;
     while (q!= NULL && q->user_id != id){
@@ -151,7 +150,7 @@ int aumentar_prazo(emprestimo *cab, unsigned int id,int dias){
     }
 }
 
-int aplicar_penalidade(emprestimo *usuario, int dias_atraso){
+int aplicar_penalidade(Emprestimo *usuario, int dias_atraso){
     int dias_atrasado = dias_atraso - usuario->prazo;
     if (dias_atrasado < 0){
         printf("Penalidade não aplicada!\n Dias de atraso negativo.\n");
@@ -163,9 +162,9 @@ int aplicar_penalidade(emprestimo *usuario, int dias_atraso){
     }
 }
 
-void emprestimo_destroy(emprestimo *cab){
-    for( emprestimo *p = cab; p->prox!=NULL; p = p->prox){
-        emprestimo *q= p->prox;
+void emprestimo_destroy(Emprestimo *cab){
+    for( Emprestimo *p = cab; p->prox!=NULL; p = p->prox){
+        Emprestimo *q= p->prox;
         p->prox = q->prox;
         free(q);
     }
