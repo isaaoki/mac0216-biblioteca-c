@@ -43,7 +43,7 @@ UserConj* cria_conj_usuarios(size_t c){
 }
 
 int remove_conj_usuarios(UserConj* c){
-    if (!c) return 1;
+    if (!c) return -1;
     if (c->users){
         for (size_t i=0; i<c->capacidade;i++){
             UserNode* atual=c->users[i];
@@ -63,7 +63,7 @@ int remove_conj_usuarios(UserConj* c){
 int redimensiona_conj_usuarios(UserConj* conj){
     size_t c=conj->capacidade*2;
     UserNode** novo=(UserNode**) calloc(c, sizeof(UserNode*));
-    if (!novo) return 1;
+    if (!novo) return -1;
     for (size_t i=0;i<conj->capacidade;i++){
         UserNode* atual=conj->users[i];
         while (atual){
@@ -81,12 +81,12 @@ int redimensiona_conj_usuarios(UserConj* conj){
 }
 
 unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
-    if (!conj || !s) return 1;    
+    if (!conj || !s) return -1;    
     if (conj->tam >= conj->capacidade * 0.75) {
         redimensiona_conj_usuarios(conj);
     }
     User* u = (User*) malloc(sizeof(User));
-    if (!u) return 1;
+    if (!u) return -1;
     u->id=conj->next_id;
     conj->next_id++;
     strcpy(u->nome, s);
@@ -95,7 +95,7 @@ unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
     UserNode* novo=(UserNode*) malloc(sizeof(UserNode));
     if (!novo){
         free(u);
-        return 1;
+        return -1;
     }
     novo->user=u;
     novo->prox=conj->users[idx];
@@ -106,14 +106,14 @@ unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
 
 
 int remove_usuario(UserConj* conj, unsigned int id){
-   if (!conj || id==0) return 0;
+   if (!conj || id==0) return -1;
    unsigned int idx=hash_id(id, conj->capacidade);
    UserNode* atual=conj->users[idx];
    UserNode* prev=NULL;
    while (atual){
         User* u=atual->user;
         if (u->id==id){
-            if (u->status == USER_BLOCKED) return 0; //nao deleta se estiver com emprestimo pendente
+            if (u->status == USER_BLOCKED) return -1; //nao deleta se estiver com emprestimo pendente
             if (prev){
                 prev->prox=atual->prox;
             } else{
@@ -128,7 +128,7 @@ int remove_usuario(UserConj* conj, unsigned int id){
         atual=atual->prox;
    }
    
-   return 1;
+   return -1;
 }
 
 User* busca_usuario(UserConj* conj, unsigned int id){
@@ -151,7 +151,7 @@ const char* obter_nome_usuario(const User* u){
 }
 
 unsigned int obter_id_usuario(const User* u){
-    if (!u) return 1;
+    if (!u) return -1;
     return u->id;
 }
 
@@ -161,12 +161,12 @@ UserStatus obter_status_usuario(const User* u){
 }
 
 int verifica_emprestimo(const User* u){
-    if (!u) return 1;
+    if (!u) return -1;
     return (u->status==USER_OK);
 }
 
 int atualiza_status_usuario(User* u, UserStatus status){
-    if (!u) return 1;
+    if (!u) return -1;
     u->status=status;
     return 0;
 }
