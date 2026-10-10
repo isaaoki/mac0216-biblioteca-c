@@ -1,6 +1,6 @@
 #include "../include/usuario.h"
-#include <stdlib.h>
 #include <string.h>
+
 /*
 Ideia:
 Usuario: nome, id, status(pode ou nao pegar um livro)
@@ -27,7 +27,7 @@ static unsigned int hash_id(unsigned int id, size_t capacidade) {
     return id % capacidade;
 }
 
-UserConj* user_conj_create(size_t c){
+UserConj* cria_conj_usuarios(size_t c){
     if (c==0) c=16;
     UserConj* conjunto= (UserConj*) malloc(sizeof(UserConj));
     if (!conjunto) return NULL; //caso a alocacao de errado
@@ -41,7 +41,8 @@ UserConj* user_conj_create(size_t c){
     conjunto -> next_id=1;
     return conjunto;
 }
-void user_conj_destroy(UserConj* c){
+
+void remove_conj_usuarios(UserConj* c){
     if (!c) return ;
     if (c->users){
         for (size_t i=0; i<c->capacidade;i++){
@@ -57,7 +58,8 @@ void user_conj_destroy(UserConj* c){
     }
     free(c);
 }
-void user_conj_resize(UserConj* conj){
+
+void redimensiona_conj_usuarios(UserConj* conj){
     size_t c=conj->capacidade*2;
     UserNode** novo=(UserNode**) calloc(c, sizeof(UserNode*));
     if (!novo) return;
@@ -74,13 +76,12 @@ void user_conj_resize(UserConj* conj){
     free(conj->users);
     conj->users=novo;
     conj->capacidade=c;
-
-
 }
-unsigned int user_register(UserConj* conj, const char* s, UserStatus status){
+
+unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
     if (!conj || !s) return 0;    
     if (conj->tam >= conj->capacidade * 0.75) {
-        user_conj_resize(conj);
+        redimensiona_conj_usuarios(conj);
     }
     User* u = (User*) malloc(sizeof(User));
     if (!u) return 0;
@@ -102,7 +103,7 @@ unsigned int user_register(UserConj* conj, const char* s, UserStatus status){
 }
 
 
-int user_delete(UserConj* conj, unsigned int id){
+int remove_usuario(UserConj* conj, unsigned int id){
    if (!conj || id==0) return 0;
    unsigned int idx=hash_id(id, conj->capacidade);
    UserNode* atual=conj->users[idx];
@@ -128,7 +129,7 @@ int user_delete(UserConj* conj, unsigned int id){
    return 0;
 }
 
-User* user_find(UserConj* conj, unsigned int id){
+User* busca_usuario(UserConj* conj, unsigned int id){
     if (!conj || id==0) return NULL;
     unsigned int idx=hash_id(id, conj->capacidade);
     UserNode* atual=conj->users[idx];
@@ -142,25 +143,27 @@ User* user_find(UserConj* conj, unsigned int id){
     return NULL;
 }
 
-const char* user_get_name(const User* u){
+const char* obter_nome_usuario(const User* u){
     if (!u) return NULL;
     return u->nome;
 }
-unsigned int user_get_id(const User* u){
+
+unsigned int obter_id_usuario(const User* u){
     if (!u) return 0;
     return u->id;
 }
-UserStatus user_get_status(const User* u){
+
+UserStatus obter_status_usuario(const User* u){
     if (!u) return USER_BLOCKED;
     return u->status;
 }
 
-int user_emprestimo(const User* u){
+int verifica_emprestimo(const User* u){
     if (!u) return 0;
     return (u->status==USER_OK);
 }
 
-int user_set_status(User* u, UserStatus status){
+int atualiza_status_usuario(User* u, UserStatus status){
     if (!u) return 0;
     u->status=status;
     return 1;

@@ -16,7 +16,7 @@ int main() {
             }
         }
         user_save(users);
-        user_conj_destroy(users);
+        remove_conj_usuarios(users);
     }
 
     printf("Testando persistência dos livros...\n");

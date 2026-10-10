@@ -1,53 +1,51 @@
 #ifndef USUARIO_H
 #define USUARIO_H
-    #include <stdlib.h>
-    //Status do usuario
-    typedef enum {
-        USER_BLOCKED,
-        USER_OK
-    } UserStatus;
-    
-    typedef struct User User;
-    typedef struct UserConj UserConj;
 
-    //Tabela Hash
-    typedef struct UserNode {
-        User* user;
-        struct UserNode* prox;
-    } UserNode;
-    //Usuario
-    struct User {
-        unsigned int id;
-        char nome[100];
-        UserStatus status;
-    };
-    //Conjunto dos usuarios
-    struct UserConj{
-        UserNode** users;
-        size_t tam;
-        size_t capacidade;
-        unsigned int next_id;
-    };
+#include <stdlib.h>
 
-    //Conjunto dos Usuarios
-    UserConj* user_conj_create(size_t capacidade);
-    void user_conj_destroy(UserConj* conjunto);
-    void user_conj_resize(UserConj* conjunto);
+typedef enum {
+    USER_BLOCKED,
+    USER_OK
+} UserStatus;
 
-    unsigned int user_register(UserConj* conjunto, const char* nome, UserStatus status);
-    int user_delete(UserConj* conjunto, unsigned int user_id);
-    User* user_find(UserConj* conjunto, unsigned int user_id);
+// Usuario
+typedef struct User {
+    unsigned int id;
+    char nome[100];
+    UserStatus status;
+} User;
 
-    const char* user_get_name(const User* user);
-    unsigned int user_get_id(const User* user);
-    UserStatus user_get_status(const User* user);
+// Tabela Hash
+typedef struct UserNode {
+    User* user;
+    struct UserNode* prox;
+} UserNode;
 
-    //Retorna 1 se o user puder pegar um livro 
-    //Retorna 0 se o user nao puder pegar um livro (ja tem um emprestimo ativo)
-    int user_emprestimo(const User* user);
-    //Atualiza o status o usuario
-    int user_set_status(User* user, UserStatus status);
+// Conjunto dos usuarios
+typedef struct UserConj{
+    UserNode** users;
+    size_t tam;
+    size_t capacidade;
+    unsigned int next_id;
+} UserConj;
 
+UserConj* cria_conj_usuarios(size_t capacidade);
+void remove_conj_usuarios(UserConj* conjunto);
+void redimensiona_conj_usuarios(UserConj* conjunto);
 
+unsigned int cria_usuario(UserConj* conjunto, const char* nome, UserStatus status);
+int remove_usuario(UserConj* conjunto, unsigned int user_id);
+User* busca_usuario(UserConj* conjunto, unsigned int user_id);
+
+const char* obter_nome_usuario(const User* user);
+unsigned int obter_id_usuario(const User* user);
+UserStatus obter_status_usuario(const User* user);
+
+//Retorna 1 se o user puder pegar um livro 
+//Retorna 0 se o user nao puder pegar um livro (ja tem um emprestimo ativo)
+int verifica_emprestimo(const User* user);
+
+//Atualiza o status o usuario
+int atualiza_status_usuario(User* user, UserStatus status);
 
 #endif

@@ -21,13 +21,13 @@ emprestimo *emprestimo_create(void){
 
 
 int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, const char *isbn){
-    User *usuario = user_find(usuarios, id);
+    User *usuario = busca_usuario(usuarios, id);
     if (usuario == NULL){
         printf("Empréstimo negado!\n Usuário não encontrado.\n");
         return 0;
     }
     else{
-        if(user_emprestimo(usuario)== 1){
+        if(verifica_emprestimo(usuario)== 1){
             if(book->copias_disponiveis > 0){
                 emprestimo *empret = malloc(sizeof(emprestimo));
                 if (empret == NULL){
@@ -36,7 +36,7 @@ int emprestar_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned i
                 }
                 else{
                     book->copias_disponiveis--;
-                    user_set_status(usuario, 0);
+                    atualiza_status_usuario(usuario, 0);
 
                     empret->user_id = id;
                     strncpy(empret->isbn, isbn, sizeof(empret->isbn) - 1);
@@ -94,14 +94,14 @@ int devolver_livro(emprestimo *cab, UserConj *usuarios, Livro *book, unsigned in
     }
 
     if(q!=NULL){
-        User *usuario = user_find(usuarios, q->user_id);
+        User *usuario = busca_usuario(usuarios, q->user_id);
         if (usuario == NULL){
             printf("Devolução não realizada!\n Usuário não encontrado.\n");
             return 0;
         }
         else{
             book->copias_disponiveis++;
-            user_set_status(usuario, 1); //desbloqueia usuario
+            atualiza_status_usuario(usuario, 1); //desbloqueia usuario
 
             time_t devolvido = time(NULL);
             double diferenca = difftime(devolvido, q->data_emprestimo);

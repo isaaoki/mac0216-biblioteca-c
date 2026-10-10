@@ -10,7 +10,7 @@ UserConj* user_load() {
     }
 
     // Cria conjunto de usuários
-    UserConj* usuarios = user_conj_create(16);
+    UserConj* usuarios = cria_conj_usuarios(16);
     char nome[100];
     int status;
 
@@ -20,7 +20,7 @@ UserConj* user_load() {
         if (status == 1) s = USER_OK;
         else s = USER_BLOCKED;
         
-        user_register(usuarios, nome, s);
+        cria_usuario(usuarios, nome, s);
     }
 
     fclose(f);
