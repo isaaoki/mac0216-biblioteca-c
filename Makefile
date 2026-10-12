@@ -1,8 +1,8 @@
 CC = gcc
 
-HEADERS_ESTAT = -Iinclude -Wall -c
+HEADERS_ESTAT = -Iinclude -Wall -MMD -MP -c
 
-HEADERS_DIN = -Iinclude -fPIC -Wall -c
+HEADERS_DIN = -Iinclude -fPIC -Wall -MMD -MP -c
 
 AR = ar
 
@@ -12,11 +12,69 @@ DIR_OBJ = ./build/obj
 
 DIR_LIB = ./build/lib
 
+DIR_TESTS = ./tests
+
+DIR_BIN = ./build/bin
+
 .DEFAULT_GOAL := all
 
 all: programa_estatico programa_dinamico
 
-.PHONY: all
+run_estatico: programa_estatico
+	./programa_estatico
+
+run_dinamico: programa_dinamico
+	./programa_dinamico
+
+run: programa_dinamico programa_estatico
+	./programa_dinamico
+	./programa_estatico
+
+clean:
+	rm -f $(DIR_LIB)/*.so
+	rm -f $(DIR_LIB)/*.a
+	rm -f $(DIR_OBJ)/*.o
+	rm -f $(DIR_OBJ)/*.d
+	rm -f programa_dinamico programa_estatico
+	rm -f $(DIR_BIN)/teste*
+	rm -f $(DIR_BIN)/*.d
+
+#Testes:
+test: $(DIR_BIN)/teste_catalogo $(DIR_BIN)/teste_persistencia $(DIR_BIN)/teste_emprestimo $(DIR_BIN)/teste_set $(DIR_BIN)/teste_usuario
+	$(DIR_BIN)/teste_catalogo
+	$(DIR_BIN)/teste_persistencia
+	$(DIR_BIN)/teste_emprestimo
+	$(DIR_BIN)/teste_set
+	$(DIR_BIN)/teste_usuario
+
+$(DIR_BIN)/teste_catalogo: $(DIR_TESTS)/teste_catalogo.c $(DIR_LIB)/lib_biblio_estat.a
+	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_catalogo.d -MT $(DIR_BIN)/teste_catalogo ./tests/teste_catalogo.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_catalogo
+
+$(DIR_BIN)/teste_persistencia: $(DIR_TESTS)/teste_persistencia.c $(DIR_LIB)/lib_biblio_estat.a
+	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_persistencia.d -MT $(DIR_BIN)/teste_persistencia ./tests/teste_persistencia.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_persistencia
+
+$(DIR_BIN)/teste_emprestimo: $(DIR_TESTS)/teste_emprestimo.c $(DIR_LIB)/lib_biblio_estat.a
+	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_emprestimo.d -MT $(DIR_BIN)/teste_emprestimo ./tests/teste_emprestimo.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_emprestimo
+
+$(DIR_BIN)/teste_set: $(DIR_TESTS)/teste_set.c $(DIR_LIB)/lib_biblio_estat.a
+	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_set.d -MT $(DIR_BIN)/teste_set ./tests/teste_set.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_set
+
+$(DIR_BIN)/teste_usuario: $(DIR_TESTS)/teste_usuario.c $(DIR_LIB)/lib_biblio_estat.a
+	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_usuario.d -MT $(DIR_BIN)/teste_usuario ./tests/teste_usuario.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_usuario
+
+#Install:
+#Atribui valor nessa variável, caso ainda não tenha sido atribuido nada.
+#O local será usado para instalar as bibliotecas.
+PREFIX ?= /usr/local
+
+install: $(DIR_LIB)/lib_biblio_estat.a $(DIR_LIB)/lib_biblio_din.so
+	mkdir -p $(PREFIX)/lib
+	mkdir -p $(PREFIX)/include
+	cp $(DIR_LIB)/lib_biblio_estat.a $(PREFIX)/lib/
+	cp $(DIR_LIB)/lib_biblio_din.so $(PREFIX)/lib/
+	cp ./include/*.h $(PREFIX)/include/
+
+.PHONY: all clean run_estatico run_dinamico run test install
 
 .PHONY: lib_biblio_estat lib_biblio_din
 #alias
@@ -24,12 +82,16 @@ lib_biblio_estat: $(DIR_LIB)/lib_biblio_estat.a
 lib_biblio_din: $(DIR_LIB)/lib_biblio_din.so
 
 #Linkagem
-programa_estatico: ./src/main.c ./build/lib/lib_biblio_estat.a
-	$(CC) -Iinclude ./src/main.c -L./build/lib -l_biblio_estat -o programa_estatico
+programa_estatico: $(DIR_OBJ)/main.o ./build/lib/lib_biblio_estat.a
+	$(CC) -Iinclude $(DIR_OBJ)/main.o -L./build/lib -l_biblio_estat -o programa_estatico
 
-programa_dinamico: ./src/main.c ./build/lib/lib_biblio_din.so
-	$(CC) -Iinclude ./src/main.c -L./build/lib -l_biblio_din -Wl,-rpath,'$$ORIGIN/build/lib' -o programa_dinamico
+programa_dinamico: $(DIR_OBJ)/main.o ./build/lib/lib_biblio_din.so
+	$(CC) -Iinclude $(DIR_OBJ)/main.o -L./build/lib -l_biblio_din -Wl,-rpath,'$$ORIGIN/build/lib' -o programa_dinamico
 #Foi necessário adicionar mais flags para que funcione sem instalação global.
+
+#Compilação do main
+$(DIR_OBJ)/main.o: ./src/main.c
+	$(CC) -Iinclude -Wall -MMD -MP -c ./src/main.c -o $(DIR_OBJ)/main.o
 
 #Biblioteca Estátíca
 $(DIR_LIB)/lib_biblio_estat.a: $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/set_estat.o $(DIR_OBJ)/usuario_estat.o 
@@ -38,7 +100,7 @@ $(DIR_LIB)/lib_biblio_estat.a: $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo
 $(DIR_OBJ)/catalogo_estat.o: ./src/catalogo.c
 	$(CC) $(HEADERS_ESTAT) ./src/catalogo.c -o $(DIR_OBJ)/catalogo_estat.o
 
-$(DIR_OBJ)/emprestimo_estat.o: ./src/emprestimo.c
+$(DIR_OBJ)/emprestimo_estat.o: ./src/emprestimo.c 
 	$(CC) $(HEADERS_ESTAT) ./src/emprestimo.c -o $(DIR_OBJ)/emprestimo_estat.o
 
 $(DIR_OBJ)/persistencia_estat.o: ./src/persistencia.c
@@ -68,3 +130,8 @@ $(DIR_OBJ)/set_din.o: ./src/set.c
 
 $(DIR_OBJ)/usuario_din.o: ./src/usuario.c
 	$(CC) $(HEADERS_DIN) ./src/usuario.c -o $(DIR_OBJ)/usuario_din.o
+
+#Considerar os .d, eles vão verificar se of .h foram alterados.
+#Inclui automaticamente as dependências dos headers
+-include $(wildcard $(DIR_OBJ)/*.d)
+-include $(wildcard $(DIR_BIN)/*.d)

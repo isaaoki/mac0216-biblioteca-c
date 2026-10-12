@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "catalogo.h"
 
-int main(void) {
+int main() {
     Livro *catalogo = NULL;
     Livro *encontrado;
 
