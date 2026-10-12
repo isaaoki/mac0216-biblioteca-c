@@ -12,6 +12,11 @@ DIR_OBJ = ./build/obj
 
 DIR_LIB = ./build/lib
 
+.DEFAULT_GOAL := all
+
+all: programa_estatico programa_dinamico
+
+.PHONY: all
 
 .PHONY: lib_biblio_estat lib_biblio_din
 #alias
@@ -22,8 +27,9 @@ lib_biblio_din: $(DIR_LIB)/lib_biblio_din.so
 programa_estatico: ./src/main.c ./build/lib/lib_biblio_estat.a
 	$(CC) -Iinclude ./src/main.c -L./build/lib -l_biblio_estat -o programa_estatico
 
-programa_dinamico: ./src/main.c
-	$(CC) -Iinclude ./src/main.c -L./build/lib -l_biblio_estat -o programa_dinamico
+programa_dinamico: ./src/main.c ./build/lib/lib_biblio_din.so
+	$(CC) -Iinclude ./src/main.c -L./build/lib -l_biblio_din -Wl,-rpath,'$$ORIGIN/build/lib' -o programa_dinamico
+#Foi necessário adicionar mais flags para que funcione sem instalação global.
 
 #Biblioteca Estátíca
 $(DIR_LIB)/lib_biblio_estat.a: $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/set_estat.o $(DIR_OBJ)/usuario_estat.o 
