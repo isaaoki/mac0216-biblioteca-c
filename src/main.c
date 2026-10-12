@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/catalogo.h"
+#include "catalogo.h"
+#include "emprestimo.h"
+#include "persistencia.h"
+#include "set.h"
+#include "usuario.h"
 
 static void imprimir_resultado_busca(Livro *catalogo, const char *isbn) {
     printf("\nBuscando ISBN %s:\n", isbn);

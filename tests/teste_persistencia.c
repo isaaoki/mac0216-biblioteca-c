@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../include/persistencia.h"
+#include "persistencia.h"
 
 int main() {
     printf("Testando persistência dos usuários...\n");

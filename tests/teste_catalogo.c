@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include "../include/catalogo.h"
+#include "catalogo.h"
 
 int main(void) {
     Livro *catalogo = NULL;
