@@ -40,9 +40,8 @@ typedef struct UserConj{
 
 /**
  * @brief Cria um novo conjunto de usuários com capacidade inicial especificada.
- * @param capacidade Capacidade inicial da tabela hash. Se 0, utiliza o valor padrão 16.
+ * @param capacidade Capacidade inicial da tabela hash. Se <=0, utiliza o valor padrão 16.
  * @returns Ponteiro para o conjunto criado, ou NULL em caso de falha na alocação de memória.
- * @pre capacidade >= 0.
  * @post O conjunto de usuários é alocado, com tamanho 0 e next_id inicializado como 1.
  * @note Caso ocorra falha ao alocar memória para o conjunto ou para a tabela, a função retorna NULL.
  */
