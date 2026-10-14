@@ -144,4 +144,11 @@ int verifica_emprestimo(const User* user);
  */
 int atualiza_status_usuario(User* user, UserStatus status);
 
+/**
+ * @brief Imprime os usuários salvos do programa.
+ * @param usuarios Ponteiro para o conjunto de usuários;
+ * @pre O conjunto de usuários não é vazio, ou seja, usuarios não é NULL.
+ */
+void imprime_usuarios(UserConj *usuarios);
+
 #endif

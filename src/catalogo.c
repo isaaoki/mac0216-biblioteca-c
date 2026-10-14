@@ -218,3 +218,19 @@ Livro *busca_livro(Livro *root, const char *isbn) {
     printf("[ERRO] Livro com ISBN %s não encontrado no catálogo.\n", isbn);
     return NULL;
 }
+
+void imprime_livros(Livro *root) {
+    if (root == NULL) return;
+
+    imprime_livros(root->left);
+    printf("ISBN: %s, Nome: %s, Autor: %s, Ano: %d, Copias disponiveis: %d, Copias totais: %d\n", root->isbn, root->nome, root->autor, root->ano, root->copias_disponiveis, root->copias_totais);
+    imprime_livros(root->right);
+}
+
+void remove_catalogo(Livro *root) {
+    if (root == NULL) return;
+
+    remove_catalogo(root->left);   
+    remove_catalogo(root->right);  
+    free(root);         
+}

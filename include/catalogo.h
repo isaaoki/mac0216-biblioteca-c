@@ -82,4 +82,20 @@ Livro *remove_livro(Livro *root, const char *isbn);
  */
 Livro *busca_livro(Livro *root, const char *isbn);
 
+/**
+ * @brief Imprime os livros salvos do programa.
+ * @param root Ponteiro para o catalogo de livros (raíz da árvore);
+ * @pre O ponteiro catalogo não é NULL.
+ */
+void imprime_livros(Livro *root);
+
+/**
+ * @brief Libera toda a memória da árvore de livros.
+ * @param root Raiz da árvore de livros (pode ser NULL).
+ * @pre Todos os nós foram alocados dinamicamente (por insere_livro).
+ * @post Todos os nós da árvore são liberados. O ponteiro root fica inválido, 
+ * então é recomendado atribuir NULL a ele depois da função ser chamada.
+ */
+void remove_catalogo(Livro *root);
+
 #endif
