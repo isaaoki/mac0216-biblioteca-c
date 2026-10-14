@@ -162,11 +162,23 @@ int aplicar_penalidade(Emprestimo *usuario, int dias_atraso){
     }
 }
 
-void emprestimo_destroy(Emprestimo *cab){
-    for( Emprestimo *p = cab; p->prox!=NULL; p = p->prox){
-        Emprestimo *q= p->prox;
-        p->prox = q->prox;
+void remove_emprestimos(Emprestimo *cab){
+    if (cab == NULL) return;
+
+    while(cab->prox != NULL) {
+        Emprestimo *q = cab->prox;
+        cab->prox = q->prox;
         free(q);
     }
+
     free(cab);
+}
+
+void imprime_emprestimos(Emprestimo* emprestimos) {
+    Emprestimo *atual = emprestimos->prox; // Ignora sentinela
+
+    while (atual != NULL) {
+        printf("ID do usuario: %u, ISBN: %s, Prazo: %d, Data do emprestimo: %ld, Data da devolucao: %ld\n", atual->user_id, atual->isbn, atual->prazo, (long) atual->data_emprestimo, (long)atual->data_devolucao);
+        atual = atual->prox;
+    }
 }

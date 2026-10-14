@@ -1,5 +1,6 @@
 #include "../include/usuario.h"
 #include <string.h>
+#include <stdio.h>
 
 // 1. Funcao Basica de Hash para tabela
 static unsigned int hash_id(unsigned int id, size_t capacidade) {
@@ -173,4 +174,14 @@ int atualiza_status_usuario(User* u, UserStatus status){
     if (!u) return 0;
     u->status=status;
     return 1;
+}
+
+void imprime_usuarios(UserConj *usuarios) {
+   for (size_t i = 0; i < usuarios->capacidade; i++) {
+        UserNode* u = usuarios->users[i];
+        while (u != NULL) {
+            printf("ID: %d, Nome: %s, Status %d\n", u->user->id, u->user->nome, u->user->status);
+            u = u->prox;
+        }
+    }    
 }
