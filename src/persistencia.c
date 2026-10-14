@@ -1,11 +1,14 @@
 #include "../include/persistencia.h"
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
 
 UserConj* carrega_usuarios() {
     FILE *f;
 
-    f = fopen("users.txt", "r");
+    f = fopen("usuarios.txt", "r");
     if (f == NULL) {
-        printf("An error occured while opening users.txt\n");
+        printf("An error occured while opening usuarios.txt\n");
         return NULL; 
     }
 
@@ -17,7 +20,7 @@ UserConj* carrega_usuarios() {
     while(fscanf(f, " %99[^;];%d", nome, &status) == 2) {
         UserStatus s;
 
-        if (status == 1) s = USER_OK;
+        if (status == 0) s = USER_OK;
         else s = USER_BLOCKED;
         
         cria_usuario(usuarios, nome, s);
@@ -30,9 +33,9 @@ UserConj* carrega_usuarios() {
 int salva_usuarios(UserConj* usuarios) {
     FILE *f;
 
-    f = fopen("users.txt", "w");
+    f = fopen("usuarios.txt", "w");
     if (f == NULL) {
-        printf("An error occured while opening users.txt\n");
+        printf("An error occured while opening usuarios.txt\n");
         return -1; 
     }
 
@@ -58,7 +61,7 @@ int salva_usuarios(UserConj* usuarios) {
 Livro* carrega_catalogo() {
     FILE *f;
 
-    f = fopen("books.txt", "r");
+    f = fopen("livros.txt", "r");
     if (f == NULL) {
         printf("An error occured while opening book.txt\n");
         return NULL; 
@@ -102,15 +105,84 @@ void salva_catalogo_aux(Livro *root, FILE *f) {
 int salva_catalogo(Livro* catalogo) {
     FILE *f;
 
-    f = fopen("books.txt", "w");
+    f = fopen("livros.txt", "w");
     if (f == NULL) {
-        printf("An error occured while opening books.txt\n");
+        printf("An error occured while opening livros.txt\n");
         return -1; 
     }
 
     // Chama função recursiva que percorre a árvore
     salva_catalogo_aux(catalogo, f);
 
+    fclose(f);
+    return 0;
+}
+
+Emprestimo* carrega_emprestimos() {
+    FILE *f;
+
+    f = fopen("emprestimos.txt", "r");
+    if (f == NULL) {
+        printf("[ERRO] Erro ocorreu na abertura do arquivo emprestimos.txt\n");
+        return NULL; 
+    }
+
+    Emprestimo *cab = criar_emprestimo();
+    if (cab == NULL) {
+        printf("[ERRO] Erro na alocação de memória dos empréstimos\n");
+        fclose(f);
+        return NULL;
+    }
+
+    unsigned int user_id;
+    char isbn[14];
+    int prazo;
+    long data_emprestimo, data_devolucao;
+
+    while (fscanf(f, "%u;%13[^;];%d;%ld;%ld", &user_id, isbn, &prazo, &data_emprestimo, &data_devolucao) == 5) {
+        Emprestimo *novo = malloc(sizeof(Emprestimo));
+
+        if (novo == NULL) {
+            fclose(f);
+            return NULL;
+        }
+
+        novo->user_id = user_id;
+        strcpy(novo->isbn, isbn);
+        novo->prazo = prazo;
+        novo->data_emprestimo = (time_t)data_emprestimo;
+        novo->data_devolucao = (time_t)data_devolucao;
+
+
+        novo->prox = cab->prox;
+        cab->prox = novo;
+    }
+
+    fclose(f);
+    return cab;
+}
+
+int salva_emprestimos(Emprestimo* cab) {
+    FILE *f;
+
+    f = fopen("emprestimos.txt", "w");
+    if (f == NULL) {
+        printf("[ERRO] Erro ocorreu na abertura do arquivo emprestimos.txt\n");
+        return -1; 
+    }
+
+    Emprestimo *atual = cab->prox;
+
+    while (atual != NULL) {
+        fprintf(f, "%u;%s;%d;%ld;%ld\n",
+            atual->user_id,
+            atual->isbn,
+            atual->prazo,
+            (long)atual->data_emprestimo,
+            (long)atual->data_devolucao);
+        atual = atual->prox;
+    }
+    
     fclose(f);
     return 0;
 }
