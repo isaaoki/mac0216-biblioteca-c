@@ -182,3 +182,12 @@ void imprime_emprestimos(Emprestimo* emprestimos) {
         atual = atual->prox;
     }
 }
+
+Emprestimo *busca_emprestimo(Emprestimo *emprestimos, unsigned int id, const char *isbn) {
+    Emprestimo *temp = emprestimos->prox;
+    while (temp != NULL) {
+        if (temp->user_id == id && strcmp(temp->isbn, isbn) == 0) return temp;
+        temp = temp->prox;
+    }
+    return NULL;
+}

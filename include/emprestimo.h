@@ -44,4 +44,14 @@ void imprime_emprestimos(Emprestimo* emprestimos);
  */
 void remove_emprestimos(Emprestimo *emprestimos);
 
+/**
+ * @brief Busca empréstimo pelo id do usuário e pelo isbn do livro.
+ * @param emprestimos Ponteiro para o empréstimo sentinela.
+ * @param id Id do usuário.
+ * @param isbn Isbn do livro.
+ * @returns Ponteiro para o empréstimo encontrado ou NULL se não encontrou.
+ * @pre O ponteiro emprestimos não é NULL.
+ */
+Emprestimo *busca_emprestimo(Emprestimo *emprestimos, unsigned int id, const char *isbn);
+
 #endif

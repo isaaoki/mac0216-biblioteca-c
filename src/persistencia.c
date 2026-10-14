@@ -138,7 +138,7 @@ Emprestimo* carrega_emprestimos(const char *caminho) {
     if (cab == NULL) {
         printf("[ERRO] Erro na alocação de memória dos empréstimos\n");
         fclose(f);
-        emprestimo_destroy(cab);
+        remove_emprestimos(cab);
         return NULL;
     }
 
