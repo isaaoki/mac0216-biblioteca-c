@@ -1,6 +1,7 @@
-#include "../include/usuario.h"
+#include "usuario.h"
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
 
 // 1. Funcao Basica de Hash para tabela
 static unsigned int hash_id(unsigned int id, size_t capacidade) {
@@ -9,12 +10,12 @@ static unsigned int hash_id(unsigned int id, size_t capacidade) {
 
 // 2. Criar o conjunto de usuarios com capacidade c
 UserConj* cria_conj_usuarios(size_t c){
-    if (c<=0) c=16; //Caso tenham passado uma capacidade <=0, o padrão é 16
+    if (c<=0) c=16; //Caso tenham passado uma capacidade <igual a 0, o padrão é 16
 
-    UserConj* conjunto= (UserConj*) malloc(sizeof(UserConj));
+    UserConj* conjunto = (UserConj*) malloc(sizeof(UserConj));
     if (!conjunto) return NULL; //caso a alocacao de errado
 
-    conjunto->users= (UserNode**) calloc(c,sizeof(UserNode*));
+    conjunto->users = (UserNode**) calloc(c,sizeof(UserNode*));
     if (!conjunto->users) {// caso alocacao de errado
         free(conjunto);
         return NULL;
@@ -22,7 +23,7 @@ UserConj* cria_conj_usuarios(size_t c){
     //Setando os valores do conjunto
     conjunto->tam=0;
     conjunto->capacidade=c;
-    conjunto -> next_id=1;
+    conjunto->next_id=1;
 
     return conjunto;
 }
@@ -47,8 +48,8 @@ int remove_conj_usuarios(UserConj* c){
     return 1; //Sucesso
 }
 
-// 4. Redimensionar o conjunto de usuarios (Duplica a capacidade)
-int redimensiona_conj_usuarios(UserConj* conj){
+// 4. Redimensionar o conjunto de usuarios, duplicando a capacidade (função static)
+static int redimensiona_conj_usuarios(UserConj* conj){
     if (!conj) return 0;
 
     size_t c=conj->capacidade*2;
@@ -72,11 +73,13 @@ int redimensiona_conj_usuarios(UserConj* conj){
 }
 
 // 5. Registrar um usuario no sistema(criar e adicionar no conjunto)
-unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
-    if (!conj || !s) return 0;
+unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
+    if (!conj || !nome) return 0;
+    if (nome[0] == '\0' || strlen(nome) > 99 || strpbrk(nome, ";\n")) return 0;
 
     if (conj->tam >= conj->capacidade * 0.75) {
-        redimensiona_conj_usuarios(conj);
+        int resultado = redimensiona_conj_usuarios(conj);
+        if (resultado == 0) return 0;
     }
 
     User* u = (User*) malloc(sizeof(User));
@@ -84,8 +87,7 @@ unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
 
     //Definindo os valores do usuario
     u->id=conj->next_id; 
-    conj->next_id++;
-    strcpy(u->nome, s); 
+    strcpy(u->nome, nome); 
     u->status = status; 
     unsigned int idx=hash_id(u->id, conj->capacidade);
 
@@ -95,6 +97,46 @@ unsigned int cria_usuario(UserConj* conj, const char* s, UserStatus status){
         return 0;
     }
     
+    // Incrementa id quando houve sucesso da alocação
+    conj->next_id++;
+
+    //Transformando em um nó e adicionando no conjunto
+    novo->user=u;
+    novo->prox=conj->users[idx];
+    conj->users[idx]=novo;
+    conj->tam++;
+
+    return u->id; //Sucesso retorna o id do usuario
+}
+
+unsigned int cria_usuario_com_id(UserConj *conj, unsigned int id, const char *nome, UserStatus status) {
+    if (!conj || !nome) return 0;
+    if (id == 0 || id == UINT_MAX) return 0;
+    if (nome[0] == '\0' || strlen(nome) > 99 || strpbrk(nome, ";\n")) return 0;
+    if (busca_usuario(conj, id) != NULL) return 0;
+    if (conj->tam >= conj->capacidade * 0.75) {
+        int resultado = redimensiona_conj_usuarios(conj);
+        if (resultado == 0) return 0;
+    }
+
+    User* u = (User*) malloc(sizeof(User));
+    if (!u) return 0; //caso a alocacao de errado
+
+    //Definindo os valores do usuario
+    u->id = id; 
+    strcpy(u->nome, nome); 
+    u->status = status; 
+    unsigned int idx = hash_id(u->id, conj->capacidade);
+
+    UserNode* novo = (UserNode*) malloc(sizeof(UserNode));
+    if (!novo){ //caso a alocacao de errado
+        free(u);
+        return 0;
+    }
+    
+    // Mantém next_id sempre maior que qualquer id existente
+    if (id >= conj->next_id) conj->next_id = id + 1;
+
     //Transformando em um nó e adicionando no conjunto
     novo->user=u;
     novo->prox=conj->users[idx];
@@ -150,22 +192,22 @@ User* busca_usuario(UserConj* conj, unsigned int id){
 }
 
 //8. Funcoes de consulta
-const char* obter_nome_usuario(const User* u){
+const char* obtem_nome_usuario(const User* u){
     if (!u) return NULL;
     return u->nome;
 }
 
-unsigned int obter_id_usuario(const User* u){
+unsigned int obtem_id_usuario(const User* u){
     if (!u) return 0;
     return u->id;
 }
 
-UserStatus obter_status_usuario(const User* u){
+UserStatus obtem_status_usuario(const User* u){
     if (!u) return USER_BLOCKED;
     return u->status;
 }
 
-int verifica_emprestimo(const User* u){
+int usuario_pode_emprestar(const User* u){
     if (!u) return 0;
     return (u->status==USER_OK);
 }
@@ -177,10 +219,12 @@ int atualiza_status_usuario(User* u, UserStatus status){
 }
 
 void imprime_usuarios(UserConj *usuarios) {
-   for (size_t i = 0; i < usuarios->capacidade; i++) {
+    if (!usuarios) return;
+    
+    for (size_t i = 0; i < usuarios->capacidade; i++) {
         UserNode* u = usuarios->users[i];
         while (u != NULL) {
-            printf("ID: %d, Nome: %s, Status %d\n", u->user->id, u->user->nome, u->user->status);
+            printf("ID: %u, Nome: %s, Status: %s\n", u->user->id, u->user->nome, u->user->status == USER_OK ? "ok" : "bloqueado");
             u = u->prox;
         }
     }    
