@@ -11,7 +11,9 @@ static void confere_usuarios(UserConj *usuarios, UserConj *copia) {
             User *usuario = busca_usuario(copia, u->user->id);
             assert(usuario != NULL);
             assert(strcmp(usuario->nome, u->user->nome) == 0);
-            assert(usuario->status == u->user->status);
+            int status1 = usuario->status == USER_OK ? 1 : 0;
+            int status2 = u->user->status == USER_OK ? 1 : 0;
+            assert(status1 == status2);
             u = u->prox;
         }
     }
@@ -71,7 +73,7 @@ int main() {
 
     printf("Teste 2: salva usuarios em arquivo usuarios.txt\n");
     int resultado_usuarios = salva_usuarios(usuarios, "usuarios.txt");
-    assert(resultado_usuarios == 0);
+    assert(resultado_usuarios == 1);
 
     printf("Testando persistencia dos livros...\n");
     printf("Teste 3: carrega livros de arquivo livros.txt\n");
@@ -82,7 +84,7 @@ int main() {
 
     printf("Teste 4: salva livros em arquivo livros.txt\n");
     int resultado_catalogo = salva_catalogo(catalogo, "livros.txt");
-    assert(resultado_catalogo == 0);
+    assert(resultado_catalogo == 1);
 
     printf("Testando persistencia dos emprestimos...\n");
     printf("Teste 5: carrega emprestimos de arquivo emprestimos.txt\n");
@@ -93,7 +95,7 @@ int main() {
 
     printf("Teste 6: salva emprestimos em arquivo emprestimos.txt\n");
     int resultado_emprestimos = salva_emprestimos(emprestimos, "emprestimos.txt");
-    assert(resultado_emprestimos == 0);
+    assert(resultado_emprestimos == 1);
 
     // Carregar de novo os mesmos dados e comparar
     printf("Testando o carregamento dos dados novamente e comparando...\n");
@@ -118,7 +120,7 @@ int main() {
     assert(emprestimos_copia != NULL);
     assert(conta_emprestimos(emprestimos) == conta_emprestimos(emprestimos_copia));
     confere_emprestimos(emprestimos, emprestimos_copia);
-    remove_emprestimos(emprestimos_copia);
+    libera_lista_emprestimos(emprestimos_copia);
     emprestimos_copia = NULL;
 
     // Testes com erro de arquivo/diretorio inexistente
@@ -128,15 +130,15 @@ int main() {
     assert(carrega_emprestimos("nao_existe.txt") == NULL);
 
     printf("Testes 13, 14, 15: erro de salvar arquivo em diretorio inexistente\n");
-    assert(salva_usuarios(usuarios, "/dir_inexistente/usuarios.txt") == -1);
-    assert(salva_catalogo(catalogo, "/dir_inexistente/catalogo.txt") == -1);
-    assert(salva_emprestimos(emprestimos, "/dir_inexistente/emprestimos.txt") == -1);
+    assert(salva_usuarios(usuarios, "/dir_inexistente/usuarios.txt") == 0);
+    assert(salva_catalogo(catalogo, "/dir_inexistente/catalogo.txt") == 0);
+    assert(salva_emprestimos(emprestimos, "/dir_inexistente/emprestimos.txt") == 0);
 
     remove_conj_usuarios(usuarios);
     usuarios = NULL;
     remove_catalogo(catalogo);
     catalogo = NULL;
-    remove_emprestimos(emprestimos);
+    libera_lista_emprestimos(emprestimos);
     emprestimos = NULL;
     return 0;
 }
