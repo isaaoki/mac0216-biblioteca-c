@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <limits.h>
 #include "emprestimo.h"
 
 Emprestimo *cria_lista_emprestimo(void){
@@ -65,13 +66,13 @@ int empresta_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned in
 }
 
 int devolve_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int id, int *multa){
+    // Inicialmente, configura multa como zero.
+    if (multa != NULL) *multa = 0;
+
     if (cab == NULL || usuarios == NULL || book == NULL) {
         fprintf(stderr, "[ERRO] Devolucao nao realizada! Parametros invalidos.\n");
         return 0;
     }
-
-    // Inicialmente, configura multa como zero.
-    if (multa != NULL) *multa = 0;
 
     Emprestimo *p, *q;
     p = cab;
@@ -91,16 +92,31 @@ int devolve_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int
         fprintf(stderr,"[ERRO] Devolução não realizada! Usuário não encontrado.\n");
         return 0;
     }
-    
+
+    if (book->copias_disponiveis >= book->copias_totais) {
+        fprintf(stderr, "[ERRO] Devolucao nao realizada! Catalogo inconsistente (todas as copias ja disponiveis).\n");
+        return 0;
+    }
+
+    int valor_multa = 0;
+    time_t agora = time(NULL);
+
+    if (agora > q->data_devolucao) {
+        long long decorrido = (long long)(agora - q->data_emprestimo);
+        long long dias = (decorrido + 24 * 60 * 60 - 1) / 24 * 60 * 60; 
+
+        if (dias > INT_MAX) dias = INT_MAX;
+ 
+        valor_multa = calcula_multa(q, (int)dias);
+        if (valor_multa < 0) {
+            fprintf(stderr, "[ERRO] Devolucao nao realizada! Falha ao calcular a multa.\n");
+            return 0;
+        }
+    }
+
+    if (multa != NULL) *multa = valor_multa;
     book->copias_disponiveis++;
     atualiza_status_usuario(usuario, USER_OK); //desbloqueia usuario
-
-    time_t devolvido = time(NULL);
-    double diferenca = difftime(devolvido, q->data_emprestimo);
-    int dias = diferenca/(60*60*24);
-    if (dias > q->prazo){
-        *multa = calcula_multa(q, dias);
-    }
 
     p->prox = q->prox;
     free(q);
@@ -121,27 +137,38 @@ int aumenta_prazo(Emprestimo *cab, unsigned int id, int dias){
         q= q->prox;
     }
 
-    if (q!=NULL){
-        q->prazo+=dias;
-        q->data_devolucao += (dias * 24 * 60 * 60);
-        return 1;
-    }
-    else{
-        fprintf(stderr,"[ERRO] Empréstimo não encontrado! Extensão do prazo não realizado.\n");
+    if (q == NULL) {
+        fprintf(stderr, "[ERRO] Emprestimo nao encontrado! Extensao do prazo nao realizada.\n");
         return 0;
     }
+
+    if (dias > INT_MAX - q->prazo) {
+        fprintf(stderr, "[ERRO] Extensao de prazo negada! Prazo excederia o limite.\n");
+        return 0;
+    }
+
+    q->prazo += dias;
+    q->data_devolucao += (time_t)dias * 24 * 60 * 60;
+    return 1;
 }
 
-int calcula_multa(const Emprestimo *usuario, int dias_totais){
-    int dias_atrasado = dias_totais - usuario->prazo;
-    if (dias_atrasado < 0){
-        fprintf(stderr,"[ERRO] Penalidade não aplicada! Dias de atraso negativo.\n");
+int calcula_multa(const Emprestimo *emprestimo, int dias_totais){
+    if (emprestimo == NULL || dias_totais < 0) {
+        fprintf(stderr, "[ERRO] Calculo de multa com parametros invalidos.\n");
         return 0;
     }
-    else{
-        int multa = dias_atrasado * 2;
-        return multa;
+
+    int dias_atrasado = dias_totais - emprestimo->prazo;
+    if (dias_atrasado <= 0){
+        return 0;
+    } 
+    
+   if (dias_atrasado > INT_MAX / 2) {
+        fprintf(stderr, "[ERRO] Multa excede o limite representavel.\n");
+        return -1;
     }
+ 
+    return dias_atrasado * 2;
 }
 
 void libera_lista_emprestimos(Emprestimo *cab){

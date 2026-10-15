@@ -14,6 +14,7 @@
  * @post Conjunto de usuários armazena em memória os usuários do arquivo.
  * @note Caso o arquivo não exista, a função retorna NULL.
  * @note O conjunto de usuários deve ser liberados com a função remove_conj_usuarios.
+ * @note Caso um usuário tenha status diferente de 0 e 1, ele vira bloqueado.
  * @warning A leitura é interrompida na primeira linha que apresentar formato inválido. Quaisquer linhas subsequentes serão ignoradas.
  */
 UserConj* carrega_usuarios(const char *caminho);
@@ -46,10 +47,11 @@ Livro* carrega_catalogo(const char *caminho);
  * @param catalogo Raíz da árvore que armazena os livros.
  * @param caminho Caminho do arquivo a ser escrito.
  * @returns 1 se teve sucesso, 0 se não teve sucesso.
- * @pre catalogo aponta para a raiz da árvore de livros ou é NULL.
+ * @pre catalogo aponta para a raíz da árvore de livros ou é NULL.
  * @post Arquivo indicado contém os livros da árvore, sendo que cada linha possui 
  * isbn, nome, autor, ano, copias_disponiveis, copias_totais, nessa ordem, separados por ponto e vírgula.
  * @note Caso não seja possível abrir ou escrever no arquivo, a função retorna 0.
+ * @note A função grava no arquivo em pré-ordem.
  */
 int salva_catalogo(Livro *catalogo, const char *caminho);
 
@@ -63,6 +65,7 @@ int salva_catalogo(Livro *catalogo, const char *caminho);
  * @post Emprestimos do arquivo são armazenados em memória de execução.
  * @note Caso o arquivo indicado não exista, a função exibe mensagem na tela e retorna NULL.
  * @note O conjunto de empréstimos deve ser liberados com a função libera_lista_emprestimos.
+ * @warning A leitura é interrompida na primeira linha que apresentar formato inválido. Quaisquer linhas subsequentes serão ignoradas.
  */
 Emprestimo* carrega_emprestimos(const char *caminho);
 

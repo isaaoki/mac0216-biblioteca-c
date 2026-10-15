@@ -1,7 +1,7 @@
 #include "persistencia.h"
 #include <stdio.h>
-#include <time.h>
 #include <string.h>
+#include <stdlib.h>
 
 UserConj* carrega_usuarios(const char *caminho) {
     FILE *f;
@@ -29,13 +29,13 @@ UserConj* carrega_usuarios(const char *caminho) {
         if (status == 1) s = USER_OK;
         else if (status == 0) s = USER_BLOCKED;
         else {
-            fprintf(stderr, "[AVISO] Usuario com id %d e nome %s tem status invalido (diferente de 0 e 1 no arquivo), colocando ele como bloqueado\n", id, nome);
+            fprintf(stderr, "[AVISO] Usuario com id %u e nome %s tem status invalido (diferente de 0 e 1 no arquivo), colocando ele como bloqueado\n", id, nome);
             s = USER_BLOCKED;
         }
 
         int resultado = cria_usuario_com_id(usuarios, id, nome, s);
         if (resultado == 0) {
-            fprintf(stderr, "[AVISO] Erro ao criar o usuario com id %d e nome %s, pulando esse registro\n", id, nome);
+            fprintf(stderr, "[AVISO] Erro ao criar o usuario com id %u e nome %s, pulando esse registro\n", id, nome);
         }
     }
 
@@ -89,6 +89,11 @@ Livro* carrega_catalogo(const char *caminho) {
     int ano, disp, tot;
 
     while(fscanf(f, " %13[^;];%49[^;];%49[^;];%d;%d;%d", isbn, nome, autor, &ano, &disp, &tot) == 6) {
+        if (disp < 0 || tot < 0 || disp > tot) {
+            fprintf(stderr, "[AVISO] Quantidade de livros disponiveis e totais invalidos, pulando esse registro\n");
+            continue;
+        }
+        
         root = insere_livro(root, isbn, nome, autor, ano);
 
         // Após inserir, muda copias disponiveis e totais
@@ -119,6 +124,11 @@ static void salva_catalogo_aux(Livro *root, FILE *f) {
 }
 
 int salva_catalogo(Livro* catalogo, const char *caminho) {
+    if (catalogo == NULL || caminho == NULL) {
+        fprintf(stderr, "[ERRO] Parametros invalidos ao salvar livros.\n");
+        return 0;
+    }
+
     FILE *f;
 
     f = fopen(caminho, "w");

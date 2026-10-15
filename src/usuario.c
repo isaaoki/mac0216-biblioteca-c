@@ -10,7 +10,7 @@ static unsigned int hash_id(unsigned int id, size_t capacidade) {
 
 // 2. Criar o conjunto de usuarios com capacidade c
 UserConj* cria_conj_usuarios(size_t c){
-    if (c<=0) c=16; //Caso tenham passado uma capacidade <igual a 0, o padrão é 16
+    if (c==0) c=16; //Caso tenham passado uma capacidade <igual a 0, o padrão é 16
 
     UserConj* conjunto = (UserConj*) malloc(sizeof(UserConj));
     if (!conjunto) {
@@ -110,6 +110,7 @@ unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
 
     //Definindo os valores do usuario
     u->id=conj->next_id; 
+    conj->next_id++;
     strcpy(u->nome, nome); 
     u->status = status; 
     unsigned int idx=hash_id(u->id, conj->capacidade);
@@ -121,9 +122,6 @@ unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
         return 0;
     }
     
-    // Incrementa id quando houve sucesso da alocação
-    conj->next_id++;
-
     //Transformando em um nó e adicionando no conjunto
     novo->user=u;
     novo->prox=conj->users[idx];
