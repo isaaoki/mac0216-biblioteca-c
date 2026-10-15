@@ -44,11 +44,10 @@ clean:
 	rm -f $(DIR_BIN)/*.d
 
 #Testes:
-test: $(DIR_BIN)/teste_catalogo $(DIR_BIN)/teste_persistencia $(DIR_BIN)/teste_emprestimo $(DIR_BIN)/teste_set $(DIR_BIN)/teste_usuario
+test: $(DIR_BIN)/teste_catalogo $(DIR_BIN)/teste_persistencia $(DIR_BIN)/teste_emprestimo $(DIR_BIN)/teste_usuario
 	$(DIR_BIN)/teste_catalogo
 	$(DIR_BIN)/teste_persistencia
 	$(DIR_BIN)/teste_emprestimo
-	$(DIR_BIN)/teste_set
 	$(DIR_BIN)/teste_usuario
 
 $(DIR_BIN)/teste_catalogo: $(DIR_TESTS)/teste_catalogo.c $(DIR_LIB)/lib_biblio_estat.a | $(DIR_BIN)
@@ -59,9 +58,6 @@ $(DIR_BIN)/teste_persistencia: $(DIR_TESTS)/teste_persistencia.c $(DIR_LIB)/lib_
 
 $(DIR_BIN)/teste_emprestimo: $(DIR_TESTS)/teste_emprestimo.c $(DIR_LIB)/lib_biblio_estat.a | $(DIR_BIN)
 	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_emprestimo.d -MT $(DIR_BIN)/teste_emprestimo ./tests/teste_emprestimo.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_emprestimo
-
-$(DIR_BIN)/teste_set: $(DIR_TESTS)/teste_set.c $(DIR_LIB)/lib_biblio_estat.a | $(DIR_BIN)
-	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_set.d -MT $(DIR_BIN)/teste_set ./tests/teste_set.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_set
 
 $(DIR_BIN)/teste_usuario: $(DIR_TESTS)/teste_usuario.c $(DIR_LIB)/lib_biblio_estat.a | $(DIR_BIN)
 	$(CC) -Iinclude -MMD -MP -MF $(DIR_BIN)/teste_usuario.d -MT $(DIR_BIN)/teste_usuario ./tests/teste_usuario.c $(DIR_LIB)/lib_biblio_estat.a -o $(DIR_BIN)/teste_usuario
@@ -98,8 +94,8 @@ $(DIR_OBJ)/main.o: ./src/main.c | $(DIR_OBJ)
 	$(CC) -Iinclude -Wall -MMD -MP -c ./src/main.c -o $(DIR_OBJ)/main.o
 
 #Biblioteca Estátíca
-$(DIR_LIB)/lib_biblio_estat.a: $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/set_estat.o $(DIR_OBJ)/usuario_estat.o | $(DIR_LIB)
-	$(AR) $(AR_FLAGS) $(DIR_LIB)/lib_biblio_estat.a $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/set_estat.o $(DIR_OBJ)/usuario_estat.o
+$(DIR_LIB)/lib_biblio_estat.a: $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/usuario_estat.o | $(DIR_LIB)
+	$(AR) $(AR_FLAGS) $(DIR_LIB)/lib_biblio_estat.a $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/usuario_estat.o
 
 $(DIR_OBJ)/catalogo_estat.o: ./src/catalogo.c | $(DIR_OBJ)
 	$(CC) $(HEADERS_ESTAT) ./src/catalogo.c -o $(DIR_OBJ)/catalogo_estat.o
@@ -110,15 +106,12 @@ $(DIR_OBJ)/emprestimo_estat.o: ./src/emprestimo.c  | $(DIR_OBJ)
 $(DIR_OBJ)/persistencia_estat.o: ./src/persistencia.c | $(DIR_OBJ)
 	$(CC) $(HEADERS_ESTAT) ./src/persistencia.c -o $(DIR_OBJ)/persistencia_estat.o
 
-$(DIR_OBJ)/set_estat.o: ./src/set.c | $(DIR_OBJ)
-	$(CC) $(HEADERS_ESTAT) ./src/set.c -o $(DIR_OBJ)/set_estat.o
-
 $(DIR_OBJ)/usuario_estat.o: ./src/usuario.c | $(DIR_OBJ)
 	$(CC) $(HEADERS_ESTAT) ./src/usuario.c -o $(DIR_OBJ)/usuario_estat.o
 
 #Biblioteca Dinâmica
-$(DIR_LIB)/lib_biblio_din.so: $(DIR_OBJ)/catalogo_din.o $(DIR_OBJ)/emprestimo_din.o $(DIR_OBJ)/persistencia_din.o $(DIR_OBJ)/set_din.o $(DIR_OBJ)/usuario_din.o | $(DIR_LIB)
-	$(CC) -shared -o $(DIR_LIB)/lib_biblio_din.so $(DIR_OBJ)/catalogo_din.o $(DIR_OBJ)/emprestimo_din.o $(DIR_OBJ)/persistencia_din.o $(DIR_OBJ)/set_din.o $(DIR_OBJ)/usuario_din.o
+$(DIR_LIB)/lib_biblio_din.so: $(DIR_OBJ)/catalogo_din.o $(DIR_OBJ)/emprestimo_din.o $(DIR_OBJ)/persistencia_din.o $(DIR_OBJ)/usuario_din.o | $(DIR_LIB)
+	$(CC) -shared -o $(DIR_LIB)/lib_biblio_din.so $(DIR_OBJ)/catalogo_din.o $(DIR_OBJ)/emprestimo_din.o $(DIR_OBJ)/persistencia_din.o $(DIR_OBJ)/usuario_din.o
 
 $(DIR_OBJ)/catalogo_din.o: ./src/catalogo.c | $(DIR_OBJ)
 	$(CC) $(HEADERS_DIN) ./src/catalogo.c -o $(DIR_OBJ)/catalogo_din.o
@@ -128,9 +121,6 @@ $(DIR_OBJ)/emprestimo_din.o: ./src/emprestimo.c | $(DIR_OBJ)
 
 $(DIR_OBJ)/persistencia_din.o: ./src/persistencia.c | $(DIR_OBJ)
 	$(CC) $(HEADERS_DIN) ./src/persistencia.c -o $(DIR_OBJ)/persistencia_din.o
-
-$(DIR_OBJ)/set_din.o: ./src/set.c | $(DIR_OBJ)
-	$(CC) $(HEADERS_DIN) ./src/set.c -o $(DIR_OBJ)/set_din.o
 
 $(DIR_OBJ)/usuario_din.o: ./src/usuario.c | $(DIR_OBJ)
 	$(CC) $(HEADERS_DIN) ./src/usuario.c -o $(DIR_OBJ)/usuario_din.o
