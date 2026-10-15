@@ -13,10 +13,14 @@ UserConj* cria_conj_usuarios(size_t c){
     if (c<=0) c=16; //Caso tenham passado uma capacidade <igual a 0, o padrão é 16
 
     UserConj* conjunto = (UserConj*) malloc(sizeof(UserConj));
-    if (!conjunto) return NULL; //caso a alocacao de errado
+    if (!conjunto) {
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria de conjunto de usuarios\n");
+        return 0;
+    }
 
     conjunto->users = (UserNode**) calloc(c,sizeof(UserNode*));
     if (!conjunto->users) {// caso alocacao de errado
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria de conjunto de no de usuarios\n");
         free(conjunto);
         return NULL;
     }
@@ -30,7 +34,10 @@ UserConj* cria_conj_usuarios(size_t c){
 
 // 3. Excluir o conjunto de usuarios 
 int remove_conj_usuarios(UserConj* c){
-    if (!c) return 0;
+    if (!c) {
+        fprintf(stderr, "[ERRO] Conjunto de usuarios vazio\n");
+        return 0;
+    }
 
     if (c->users){
         for (size_t i=0; i<c->capacidade;i++){
@@ -50,11 +57,17 @@ int remove_conj_usuarios(UserConj* c){
 
 // 4. Redimensionar o conjunto de usuarios, duplicando a capacidade (função static)
 static int redimensiona_conj_usuarios(UserConj* conj){
-    if (!conj) return 0;
+    if (!conj) {
+        fprintf(stderr, "[ERRO] Conjunto de usuarios vazio\n");
+        return 0;
+    }
 
     size_t c=conj->capacidade*2;
     UserNode** novo=(UserNode**) calloc(c, sizeof(UserNode*));
-    if (!novo) return 0; //caso de errado a alocacao
+    if (!novo) {
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria para no usuario\n");
+        return 0;
+    }
 
     for (size_t i=0;i<conj->capacidade;i++){  //reindexando os nós
         UserNode* atual=conj->users[i];
@@ -74,8 +87,15 @@ static int redimensiona_conj_usuarios(UserConj* conj){
 
 // 5. Registrar um usuario no sistema(criar e adicionar no conjunto)
 unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
-    if (!conj || !nome) return 0;
-    if (nome[0] == '\0' || strlen(nome) > 99 || strpbrk(nome, ";\n")) return 0;
+    if (!conj || !nome) {
+        fprintf(stderr, "[ERRO] Conjunto de usuarios ou nome da pessoa NULL\n");
+        return 0;
+    }
+
+    if (nome[0] == '\0' || strlen(nome) > 99 || strpbrk(nome, ";\n")) {
+        fprintf(stderr, "[ERRO] Nome invalido. Deve ter entre 1 a 99 caracteres e nao conter ; ou quebra de linha\n");
+        return 0;
+    }
 
     if (conj->tam >= conj->capacidade * 0.75) {
         int resultado = redimensiona_conj_usuarios(conj);
@@ -83,7 +103,10 @@ unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
     }
 
     User* u = (User*) malloc(sizeof(User));
-    if (!u) return 0; //caso a alocacao de errado
+    if (!u) {
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria para usuario\n");
+        return 0;
+    }
 
     //Definindo os valores do usuario
     u->id=conj->next_id; 
@@ -93,6 +116,7 @@ unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
 
     UserNode* novo=(UserNode*) malloc(sizeof(UserNode));
     if (!novo){ //caso a alocacao de errado
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria para no usuario\n");
         free(u);
         return 0;
     }
@@ -110,17 +134,36 @@ unsigned int cria_usuario(UserConj* conj, const char* nome, UserStatus status) {
 }
 
 unsigned int cria_usuario_com_id(UserConj *conj, unsigned int id, const char *nome, UserStatus status) {
-    if (!conj || !nome) return 0;
-    if (id == 0 || id == UINT_MAX) return 0;
-    if (nome[0] == '\0' || strlen(nome) > 99 || strpbrk(nome, ";\n")) return 0;
-    if (busca_usuario(conj, id) != NULL) return 0;
+    if (!conj || !nome) {
+        fprintf(stderr, "[ERRO] Conjunto de usuarios ou nome da pessoa NULL\n");
+        return 0;
+    }
+
+    if (id == 0 || id == UINT_MAX) {
+        fprintf(stderr, "[ERRO] Id igual a zero ou maior que UINT_MAX\n");
+        return 0;
+    }
+
+    if (nome[0] == '\0' || strlen(nome) > 99 || strpbrk(nome, ";\n")) {
+        fprintf(stderr, "[ERRO] Nome invalido. Deve ter entre 1 a 99 caracteres e nao conter ; ou quebra de linha\n");
+        return 0;
+    }
+
+    if (busca_usuario(conj, id) != NULL) {
+        fprintf(stderr, "[ERRO] Usuario com esse id ja existe\n");
+        return 0;
+    }
+
     if (conj->tam >= conj->capacidade * 0.75) {
         int resultado = redimensiona_conj_usuarios(conj);
         if (resultado == 0) return 0;
     }
 
     User* u = (User*) malloc(sizeof(User));
-    if (!u) return 0; //caso a alocacao de errado
+    if (!u) {
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria para usuario\n");
+        return 0;
+    }
 
     //Definindo os valores do usuario
     u->id = id; 
@@ -130,6 +173,7 @@ unsigned int cria_usuario_com_id(UserConj *conj, unsigned int id, const char *no
 
     UserNode* novo = (UserNode*) malloc(sizeof(UserNode));
     if (!novo){ //caso a alocacao de errado
+        fprintf(stderr, "[ERRO] Falha na alocacao de memoria para no de usuario\n");
         free(u);
         return 0;
     }
@@ -148,7 +192,10 @@ unsigned int cria_usuario_com_id(UserConj *conj, unsigned int id, const char *no
 
 // 6. Excluir um usuario do conjunto de acordo com o id
 int remove_usuario(UserConj* conj, unsigned int id){
-   if (!conj || id==0) return 0;
+   if (!conj || id==0) {
+        fprintf(stderr, "[ERRO] Conjunto de usuarios NULL ou id igual a zero\n");
+        return 0;
+   }
 
    unsigned int idx=hash_id(id, conj->capacidade); //encontrar o idx correspondente da tabela hash
    UserNode* atual=conj->users[idx];
@@ -177,7 +224,10 @@ int remove_usuario(UserConj* conj, unsigned int id){
 
 // 7. Buscar um usuario do conjunto de acordo com o id
 User* busca_usuario(UserConj* conj, unsigned int id){
-    if (!conj || id==0) return NULL;
+    if (!conj || id==0) {
+        fprintf(stderr, "[ERRO] Conjunto de usuarios NULL ou id igual a zero\n");
+        return NULL;
+    }
 
     unsigned int idx=hash_id(id, conj->capacidade); //Acha o idx da tabela correspondente ao id
     UserNode* atual=conj->users[idx];

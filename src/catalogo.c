@@ -1,4 +1,4 @@
-#include "../include/catalogo.h"
+#include "catalogo.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -6,22 +6,28 @@
 Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char *autor, int ano) {
     // Verifica condições do livro
     if (isbn == NULL || nome == NULL || autor == NULL) {
-        printf("[ERRO] Dados invalidos.\n");
+        fprintf(stderr, "[ERRO] Dados invalidos.\n");
         return root;
     }
 
-    if (isbn[0] == '\0') {
-        printf("[ERRO] ISBN nao pode ser vazio.\n");
+    if (isbn[0] == '\0' || nome[0] == '\0' || autor[0] == '\0') {
+        fprintf(stderr, "[ERRO] ISBN, nome e autor nao pode ser vazio.\n");
         return root;
     }
+
+    if (strpbrk(isbn, ";\r\n") != NULL || strpbrk(nome, ";\r\n") != NULL || strpbrk(autor, ";\r\n") != NULL) {
+        fprintf(stderr, "[ERRO] Texto nao pode conter ';' nem quebra de linha.\n");
+        return root;
+    }
+
 
     if (strlen(isbn) > 13 || strlen(nome) > 49 || strlen(autor) > 49) {
-        printf("[ERRO] Texto maior que o permitido.\n");
+        fprintf(stderr, "[ERRO] Texto maior que o permitido.\n");
         return root;
     }
 
     if (ano < 0) {
-        printf("[ERRO] Ano inválido (menor do que zero).\n");
+        fprintf(stderr,"[ERRO] Ano invalido (menor do que zero).\n");
         return root;
     }
 
@@ -29,7 +35,7 @@ Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char 
     if (root == NULL) {
         root = malloc(sizeof(Livro));
         if (root == NULL) {
-            printf("[ERRO] Falta de memória.\n");
+            fprintf(stderr,"[ERRO] Falta de memória.\n");
             return NULL;
         }
         
@@ -60,7 +66,7 @@ Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char 
             if (root->left == NULL) {
                 root->left = malloc(sizeof(Livro));
                 if (root->left == NULL){
-                    printf("[ERRO] Falta de memória.\n");
+                    fprintf(stderr,"[ERRO] Falta de memória.\n");
                     return root_original;
                 }
                 root = root->left;
@@ -81,7 +87,7 @@ Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char 
             if (root->right == NULL) {
                 root->right = malloc(sizeof(Livro));
                 if (root->right == NULL) {
-                    printf("[ERRO] Falta de memória.\n");
+                    fprintf(stderr, "[ERRO] Falta de memória.\n");
                     return root_original;
                 }
                 root = root->right;
@@ -107,7 +113,7 @@ Livro *remove_livro(Livro *root, const char *isbn) {
 
     // Validação do ISBN
     if (isbn == NULL){
-        printf("[ERRO] ISBN é inválido.\n");
+        fprintf(stderr, "[ERRO] ISBN invalido.\n");
         return root;
     }
     
@@ -122,7 +128,7 @@ Livro *remove_livro(Livro *root, const char *isbn) {
                     root = NULL;
                 } else if (atual->left != NULL && atual->right == NULL) { // A raíz tem apenas filho à esquerda
                     root = atual->left;
-                } else if (atual->left == NULL && atual->right != NULL) { // A raíz tem apenas filho à esquerda
+                } else if (atual->left == NULL && atual->right != NULL) { // A raíz tem apenas filho à direita
                     root = atual->right;
                 } else { // A raíz tem dois filhos
                     root = atual->left;
@@ -185,29 +191,16 @@ Livro *remove_livro(Livro *root, const char *isbn) {
 }
 
 Livro *busca_livro(Livro *root, const char *isbn) {
-    // Valida casos em que isbn é nulo
+    // Valida casos em que isbn é nulo ou vazio
     if (isbn == NULL || isbn[0] == '\0'){
+        fprintf(stderr, "[ERRO] ISBN invalido\n");
         return NULL;
     }
 
     // Movimenta-se pela árvore, buscando isbn
     while (root != NULL){
-        int pos = strcmp(isbn,root->isbn);
+        int pos = strcmp(isbn, root->isbn);
         if (pos == 0) { // Encontrou o livro
-            printf(
-                "ISBN: %s\n"
-                "Nome do livro: %s\n"
-                "Autor do livro: %s\n"
-                "Ano de publicação: %d\n"
-                "Disponíveis: %d\n"
-                "Totais: %d\n",
-                isbn,
-                root->nome,
-                root->autor,
-                root->ano,
-                root->copias_disponiveis,
-                root->copias_totais
-            );
             return root;
         } else if (pos < 0) { // Caso em que isbn é menor
             root = root->left;
@@ -215,7 +208,6 @@ Livro *busca_livro(Livro *root, const char *isbn) {
             root = root->right;
         }
     }
-    printf("[ERRO] Livro com ISBN %s não encontrado no catálogo.\n", isbn);
     return NULL;
 }
 
