@@ -14,6 +14,8 @@ DIR_LIB = ./build/lib
 
 DIR_TESTS = ./tests
 
+DIR_MAIN = ./app/main.c
+
 DIR_BIN = ./build/bin
 
 .DEFAULT_GOAL := all
@@ -90,8 +92,8 @@ programa_dinamico: $(DIR_OBJ)/main.o ./build/lib/lib_biblio_din.so
 #Foi necessário adicionar mais flags para que funcione sem instalação global.
 
 #Compilação do main
-$(DIR_OBJ)/main.o: ./src/main.c | $(DIR_OBJ)
-	$(CC) -Iinclude -Wall -MMD -MP -c ./src/main.c -o $(DIR_OBJ)/main.o
+$(DIR_OBJ)/main.o: $(DIR_MAIN) | $(DIR_OBJ)
+	$(CC) -Iinclude -Wall -MMD -MP -c $(DIR_MAIN) -o $(DIR_OBJ)/main.o
 
 #Biblioteca Estátíca
 $(DIR_LIB)/lib_biblio_estat.a: $(DIR_OBJ)/catalogo_estat.o $(DIR_OBJ)/emprestimo_estat.o $(DIR_OBJ)/persistencia_estat.o $(DIR_OBJ)/usuario_estat.o | $(DIR_LIB)
