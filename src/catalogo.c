@@ -35,7 +35,7 @@ Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char 
     if (root == NULL) {
         root = malloc(sizeof(Livro));
         if (root == NULL) {
-            fprintf(stderr,"[ERRO] Falta de memória.\n");
+            fprintf(stderr,"[ERRO] Falta de memoria.\n");
             return NULL;
         }
         
@@ -66,7 +66,7 @@ Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char 
             if (root->left == NULL) {
                 root->left = malloc(sizeof(Livro));
                 if (root->left == NULL){
-                    fprintf(stderr,"[ERRO] Falta de memória.\n");
+                    fprintf(stderr,"[ERRO] Falta de memoria.\n");
                     return root_original;
                 }
                 root = root->left;
@@ -87,7 +87,7 @@ Livro *insere_livro(Livro *root, const char *isbn, const char *nome, const char 
             if (root->right == NULL) {
                 root->right = malloc(sizeof(Livro));
                 if (root->right == NULL) {
-                    fprintf(stderr, "[ERRO] Falta de memória.\n");
+                    fprintf(stderr, "[ERRO] Falta de memoria.\n");
                     return root_original;
                 }
                 root = root->right;

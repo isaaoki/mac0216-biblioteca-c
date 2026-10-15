@@ -15,7 +15,7 @@ UserConj* cria_conj_usuarios(size_t c){
     UserConj* conjunto = (UserConj*) malloc(sizeof(UserConj));
     if (!conjunto) {
         fprintf(stderr, "[ERRO] Falha na alocacao de memoria de conjunto de usuarios\n");
-        return 0;
+        return NULL;
     }
 
     conjunto->users = (UserNode**) calloc(c,sizeof(UserNode*));
@@ -149,6 +149,11 @@ unsigned int cria_usuario_com_id(UserConj *conj, unsigned int id, const char *no
         return 0;
     }
 
+    if (status != USER_OK && status != USER_BLOCKED) {
+        fprintf(stderr, "[ERRO] Status invalido\n");
+        return 0;
+    }
+
     if (busca_usuario(conj, id) != NULL) {
         fprintf(stderr, "[ERRO] Usuario com esse id ja existe\n");
         return 0;
@@ -204,7 +209,10 @@ int remove_usuario(UserConj* conj, unsigned int id){
    while (atual){ //Percorre o bucket
         User* u=atual->user;
         if (u->id==id){ //Se for o usuario com o id que procuramos
-            if (u->status == USER_BLOCKED) return 0; //nao deleta se estiver com emprestimo pendente
+            if (u->status == USER_BLOCKED) { //nao deleta se estiver com emprestimo pendente
+                fprintf(stderr, "[ERRO] Usuario esta com emprestimo pendente. Nao pode ser removido\n");
+                return 0;
+            }
             if (prev){
                 prev->prox=atual->prox;
             } else{
