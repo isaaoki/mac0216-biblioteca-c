@@ -103,7 +103,7 @@ int devolve_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int
 
     if (agora > q->data_devolucao) {
         long long decorrido = (long long)(agora - q->data_emprestimo);
-        long long dias = (decorrido + 24 * 60 * 60 - 1) / 24 * 60 * 60; 
+        long long dias = (decorrido + 24 * 60 * 60 - 1) / (24 * 60 * 60); 
 
         if (dias > INT_MAX) dias = INT_MAX;
  
