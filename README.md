@@ -2,7 +2,7 @@
 
 Biblioteca modular em C para gerenciamento de livros, usuários e empréstimos. O projeto reúne quatro módulos reutilizáveis, uma aplicação cliente de demonstração e testes automatizados.
 
-A biblioteca oferece operações de cadastro, busca, empréstimo, devolução e persistência em arquivos de texto. A aplicação em principal em `app/main.c` utiliza os cabeçalhos públicos para demonstrar o uso das operações implementadas. Pode ser compilado com ligação estática ou dinâmica.
+A biblioteca oferece operações de cadastro, busca, empréstimo, devolução e persistência em arquivos de texto. A aplicação principal em `app/main.c` utiliza os cabeçalhos públicos para demonstrar o uso das operações implementadas. Pode ser compilado com ligação estática ou dinâmica.
 
 ## Pré-requisitos
 
@@ -12,7 +12,7 @@ A biblioteca oferece operações de cadastro, busca, empréstimo, devolução e 
 - GNU Binutils, que fornece o comando `ar` usado para gerar a biblioteca estática.
 - Git para obter o repositório e acompanhar seu histórico.
 
-Os comandos do Makefile devem ser executadas na raiz do projeto.
+Os comandos do Makefile devem ser executados na raiz do projeto.
 
 ## Estrutura e módulos
 
@@ -83,7 +83,7 @@ make programa_estatico
 make programa_dinamico
 ```
 
-Os objetos das duas bibliotecas são separados em arquivos com os sufixos `_estat.o` e `_din.o`. A versão dinâmica é compilada com `-fPIC`, que gera código independente de posição, possiblitando criar uma biblioteca compartilhada.
+Os objetos das duas bibliotecas são separados em arquivos com os sufixos `_estat.o` e `_din.o`. A versão dinâmica é compilada com `-fPIC`, que gera código independente de posição, possibilitando criar uma biblioteca compartilhada.
 
 ### Compilação incremental
 
@@ -136,7 +136,7 @@ chmod +x ...
 ```
 para que a execução do programa seja possível.
 
-O cliente realiza uma demonstração automática, sem menu ou entrada pelo teclado. Ele carrega os dados, acrescenta um livro e dois usuários, realiza um empréstimo, aumenta o prazo, registra a devolução e deixa outro empréstimo ativo. Por fim, salva e recarrega os resultados. Caso queria adaptar a funcionalidade para seus propósitos, modifique o código cliente.
+O cliente realiza uma demonstração automática, sem menu ou entrada pelo teclado. Ele carrega os dados, acrescenta um livro e dois usuários, realiza um empréstimo, aumenta o prazo, registra a devolução e deixa outro empréstimo ativo. Por fim, salva e recarrega os resultados. Caso queira adaptar a funcionalidade para seus propósitos, modifique o código cliente.
 
 Os três arquivos de entrada são procurados no diretório de execução. Por isso, execute o cliente na raiz do repositório, mantendo os arquivos fornecidos. Cada registro ocupa uma linha, sem cabeçalho, com campos separados por `;`:
 
@@ -148,7 +148,7 @@ Os três arquivos de entrada são procurados no diretório de execução. Por is
 
 O status do usuário é `1` para disponível e `0` para bloqueado. O prazo é medido em dias; as datas são gravadas como números de segundos desde a época Unix no ambiente Linux. A leitura é interrompida quando não consegue interpretar o próximo registro. O cliente encerra com erro se não conseguir carregar alguma estrutura; um catálogo vazio também impede a demonstração.
 
-Os resultados são gravados em `demo_livros.txt`, `demo_usuarios.txt` e `demo_emprestimos.txt`, no diretório de execução. Esses arquivos são sobrescritos a cada execução; os três arquivos de entrada são preservados pela aplicação. Uma mensagem do cliente lista os nomes sem o prefixo `demo_`, mas a gravação e a releitura usam os nomes com esse prefixo. Em `make run`, a execução sobreescreve os resultados da execução anterior.
+Os resultados são gravados em `demo_livros.txt`, `demo_usuarios.txt` e `demo_emprestimos.txt`, no diretório de execução. Esses arquivos são sobrescritos a cada execução; os três arquivos de entrada são preservados pela aplicação. Uma mensagem do cliente lista os nomes sem o prefixo `demo_`, mas a gravação e a releitura usam os nomes com esse prefixo. Em `make run`, a execução sobrescreve os resultados da execução anterior.
 
 ### Ligação estática e dinâmica
 
@@ -218,4 +218,4 @@ make clean
 
 Deleta as bibliotecas `.a` e `.so` de `build/lib/`, os objetos `.o` e dependências `.d` de `build/obj/`, os executáveis `programa_estatico` e `programa_dinamico`, os arquivos `teste*` e as dependências `.d` de `build/bin/`.
 
-Note que os diretórios de compilação permanecem. Os arquivos de entrada(Nesse caso os emprestimos.txt, livrox.txt e usuariox.txt) e os resultados `demo_*.txt` também são mantidos.
+Note que os diretórios de compilação permanecem. Os arquivos de entrada(Nesse caso os emprestimos.txt, livros.txt e usuarios.txt) e os resultados `demo_*.txt` também são mantidos.
