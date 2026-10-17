@@ -2,8 +2,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <string.h>
-
-#include "../include/emprestimo.h"
+#include "emprestimo.h"
 
 int main() {
     Emprestimo *cab = cria_lista_emprestimo();
@@ -93,7 +92,7 @@ int main() {
 
     printf("Teste 11 Impressão com parâmetro inválido.\n");
     imprime_emprestimos(NULL);
-    printf("Impressão não realizada.\n")
+    printf("Impressão não realizada.\n");
 
 
     printf("Teste 12 Devolução válida.\n");
