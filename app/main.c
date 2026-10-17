@@ -73,7 +73,7 @@ int demonstra_biblioteca(Livro *catalogo, UserConj *usuarios,
         printf("Falha ao salvar os dados da demonstracao.\n");
         return 0;
     }
-    printf("Arquivos: livros.txt, usuarios.txt e emprestimos.txt\n");
+    printf("Arquivos: demo_livros.txt, demo_usuarios.txt e demo_emprestimos.txt\n");
     return 1;
     // Continue lendo o main, pois vou continuar demonstrando a persistência(recarregar os dados).
 }

@@ -47,6 +47,26 @@ int main() {
     assert(busca_emprestimo(cab, id, book->isbn) != NULL);
     printf("Empréstimo realizado com sucesso.\n");
 
+    printf("Teste 2b Empréstimo com usuário bloqueado.\n");
+    catalogo = insere_livro(catalogo, "87654321", "Livro y", "Autor y", 2026);
+    Livro *book2 = busca_livro(catalogo, "87654321");
+    assert(book2 != NULL && book2->copias_disponiveis == 1);
+    // Usuário tem emprestimo ativo (USER_BLOCKED)
+    assert(empresta_livro(cab, usuarios, book2, id, book2->isbn) == 0);
+    assert(book2->copias_disponiveis == 1);
+    printf("Usuário bloqueado não pode emprestar.\n");
+
+    printf("Teste 2c Empréstimo de livro sem cópias disponíveis.\n");
+    unsigned int id2 = cria_usuario(usuarios, "Usuario y", USER_OK);
+    assert(id2 != 0);
+    User *usuario2 = busca_usuario(usuarios, id2);
+    assert(usuario2 != NULL && usuario_pode_emprestar(usuario2) == 1);
+    // Livro tem 0 copias disponiveis
+    assert(book->copias_disponiveis == 0);
+    assert(empresta_livro(cab, usuarios, book, id2, book->isbn) == 0);
+    assert(book->copias_disponiveis == 0);
+    printf("Livro sem cópias não pode ser emprestado.\n");
+
     printf("Teste 3 Busca de empréstimo.\n");
     encontrado = busca_emprestimo(cab, id, book->isbn);
     assert(encontrado != NULL);
@@ -121,6 +141,6 @@ int main() {
     assert(remove_conj_usuarios(usuarios) == 1);
     remove_catalogo(catalogo);
     printf("Memória liberada com sucesso.\n");
-
+    
     return 0;
 }

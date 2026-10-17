@@ -64,7 +64,16 @@ int main() {
     assert(catalogo == NULL);
     printf("[APROVADO] Remocao do livro.\n");
 
-    printf("Teste 8. Remover catalogo inteiro\n");
+    printf("Teste 8. Insere ISBN repetido soma copias\n");
+    catalogo = insere_livro(catalogo, "9780000000001", "Livro teste", "Autor teste", 2026);
+    catalogo = insere_livro(catalogo, "9780000000001", "Livro teste", "Autor teste", 2026);
+    assert(catalogo != NULL);
+    assert(catalogo->left == NULL && catalogo->right == NULL);
+    assert(catalogo->copias_totais == 2);
+    assert(catalogo->copias_disponiveis == 2);
+    printf("[APROVADO] ISBN repetido aumenta as copias.\n");
+
+    printf("Teste 9. Remover catalogo inteiro\n");
     catalogo = insere_livro(catalogo, "9780000000001", "Livro teste", "Autor teste", 2026); // Insere novamente o livro
     remove_catalogo(catalogo);
     printf("[APROVADO] Remocao do catalogo (desalocacao de memoria).\n");

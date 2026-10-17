@@ -68,8 +68,14 @@ int devolve_livro(Emprestimo *cab, UserConj *usuarios, Livro *book, unsigned int
  */
 int aumenta_prazo(Emprestimo *cab, unsigned int id, int dias);
 
-
-int calcula_multa(const Emprestimo *usuario, int dias_totais);
+/**
+ * @brief Calcula a multa por atraso na devolução de um empréstimo.
+ * @param emprestimo Ponteiro para o empréstimo.
+ * @param dias_totais Número de dias totais desde a realização do empréstimo. Deve ser maior ou igual a zero.
+ * @return Retorna o valor calculado da multa em caso de sucesso (ou 0 se os parâmetros forem inválidos ou houver algum erro).
+ * @pre O ponteiro para empréstimo deve ser válido e dias_totais deve ser maior ou igual a zero.
+ */
+int calcula_multa(const Emprestimo *emprestimo, int dias_totais);
 
 /**
  * @brief Imprime os empréstimos salvos do programa.

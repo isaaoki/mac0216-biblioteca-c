@@ -33,6 +33,7 @@ int main() {
     printf(" - Sucesso: Carlos criada com - ID: %u | Nome: Carlos \n", id3);
     assert(id1 == 1 && id2 == 2 && id3 == 3);
     assert(conj->tam == 3);
+    assert(conj->capacidade > 2);   // a tabela foi redimensionada
 
     printf("Teste 4. Criando usuarios com parametros invalidos\n");
     char nome100[101];
